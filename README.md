@@ -1,3 +1,5 @@
 # code for SemiParametricDPPs manuscript
 
-### Warning: we solve only the case where S includes all the dpp samples
+we solve two cases
+    * in regularizedPicard we solve the problem where S contains the dpp samples
+    * in regularizedPicardWithUnform we solve the case where S and the dpp samples are disjoint
