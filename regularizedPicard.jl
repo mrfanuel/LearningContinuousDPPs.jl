@@ -58,7 +58,8 @@ for i in 1:it_max
     gX = a*X*Delta*X +X;
 
     # final expression
-    X = (0.5/lambda)*R'*( sqrt(I + 4*lambda*Rinv'*gX*Rinv) -I )*R;
+    temp = sqrt(I + 4*lambda*Rinv'*gX*Rinv)
+    X = (0.5/lambda)*R'*( temp -I )*R;
 
     # track the objective values
     obj[i] = -log(det(U'*X*U))+log(det(I + X)) + lambda*tr(X*invK); # check if tr log is not better.

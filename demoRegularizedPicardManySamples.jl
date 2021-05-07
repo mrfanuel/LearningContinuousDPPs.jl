@@ -21,7 +21,7 @@ it_max = 1000;
 tol = 1e-4;
 
 # regularization
-lambda = 1;
+lambda = 1.;
 
 # iterations
 X, obj, i_stop = regularizedPicard(K, samples, lambda, it_max ,tol)
