@@ -9,7 +9,7 @@ n = 100;
 
 # random K
 B = randn(n,n);
-K = A*A';
+K = B*B';
 
 # define some samples
 id1 = [1,7,16, 20];
@@ -28,3 +28,6 @@ X, obj, i_stop = regularizedPicard(K, samples, lambda, it_max ,tol)
 
 # plotting objectives
 plot(1:i_stop, obj[1:i_stop], xlabel = "iteration", ylabel = "objective value")
+
+
+

@@ -1,19 +1,20 @@
 """
-    regularizedPicard(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, lambda::Float64, it_max::Int64 ,tol::Float64)
+    regularizedPicardWithUniform(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, unifSample::Array{Int64,1} , lambda::Float64, it_max::Int64 ,tol::Float64)
 
 Compute the a fixed point of the regularized Picard iteration
 
 # Arguments
 - `K`: is an invertible nxn kernel matrix
-- `samples`: is an array containing arrys of indices from 1 to n
+- `samples`: is an array containing arrays of indices from 1 to n
+- `unifSample`: is a sample for approximating the Fredholm det.
 - `lambda`: is a real regularizer
 - `it_max`: is the max number of iterations
 - `tol`: is stopping criterion 
 
 """
-function regularizedPicard(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, lambda::Float64, it_max::Int64 ,tol::Float64)
+function regularizedPicardWithUniform(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, unifSample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64)
 
-## Warning: we solve only the case where S includes all the dpp samples
+## Warning: test to see if S can be chosen uniformly (it seems to work)
 
 # number of samples
 nb_samples = length(samples); 
@@ -29,19 +30,22 @@ invK = inv(K);
 R = cholesky(K).U;
 Rinv = inv(R);
 
-# step size
-a = 1; 
+# sampling matrix for uniformSample
+unifU = identity[:,unifSample];
 
-# regularizer
+# step size
+a = 1.; # not changed for the moment 
+
+# regularizer for matrix inverses
 epsilon = 1e-15; 
 
 # initialization
 obj = zeros(it_max,1);
 i_stop = it_max;
 
-# initial iterate
+# initial positive definite iterate
 X = randn(n,n);
-X = X*X';
+X = X*X'+ epsilon*I;
 
 # iterations
 for i in 1:it_max
@@ -52,25 +56,27 @@ for i in 1:it_max
         U = identity[:,id];
         Delta = Delta + U *inv(U'*(X+ epsilon*I)*U)*U';
     end
-    Delta = Delta/nb_samples - inv(I + X);
+
+    #Delta = Delta/nb_samples - inv(I + X);
+    Delta = Delta/nb_samples - unifU*inv(unifU'*(I + X)*unifU)*unifU';
 
     # Picard iteration
     gX = a*X*Delta*X +X;
 
     # final expression
-    temp = sqrt(I + 4*lambda*Rinv'*gX*Rinv)
+    temp = real(sqrt(I + 4*lambda*Rinv'*gX*Rinv))
     X = (0.5/lambda)*R'*( temp -I )*R;
 
     # track the objective values
-    ob = 0;
+    ob = 0
     for l = 1:nb_samples
         id = samples[l];
         U = identity[:,id];
-        ob = ob - log(det(U'*X*U + epsilon*I));
+        ob = ob - log(det(U'*X*U+ epsilon*I));
     end
-    ob = ob/nb_samples
-
-    obj[i] = ob+log(det(I + X)) + lambda*tr(X*invK); # check if tr log is not better.
+    ob = ob/nb_samples;
+    ob = ob+log(det(I + unifU'*X*unifU)) + lambda*tr(X*invK);
+    obj[i] = ob;
 
     # stopping criterion
     if i>1 && abs(obj[i]-obj[i-1])/abs(obj[i])< tol
