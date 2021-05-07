@@ -1,4 +1,4 @@
-# code for SemiParametricDPPs manuscript
+# code for the manuscript about NonParametric estimation of DPPs
 
 ### we solve two cases:
 * in regularizedPicard we solve the problem where S contains the dpp samples
