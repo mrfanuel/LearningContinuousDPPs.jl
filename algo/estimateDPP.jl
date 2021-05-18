@@ -116,7 +116,7 @@ function estimateDPP(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64,sigma
 
     
     for i = 0:(s-1)
-        temp = CSV.File("data/sample"*string(i)*".csv"; header=false) |> Tables.matrix 
+        temp = CSV.File("data/sample"*string(i)*"lambda"*string(lambda)*".csv"; header=false) |> Tables.matrix 
         display(plot!(temp[:,1], temp[:,2], seriestype = :scatter, legend = false))
     end
 
