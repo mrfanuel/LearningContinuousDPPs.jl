@@ -57,7 +57,7 @@ for i in 1:it_max
         #Delta = Delta + U *((U'*(X+ epsilon*I)*U)\U');
     end
     
-    Delta = Delta/nb_samples - unifU*inv(unifU'*nb_unif*I + X)*unifU)*unifU';
+    Delta = Delta/nb_samples - unifU*inv(unifU'*nb_unif*I + X)*unifU';
     #Delta = Delta/nb_samples - unifU*((unifU'*(I + X)*unifU)\unifU');
     Delta = 0.5*(Delta + Delta');
 
