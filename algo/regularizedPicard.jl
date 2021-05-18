@@ -32,7 +32,7 @@ Rinv = inv(R);
 
 # sampling matrix for uniformSample
 unifU = identity[:,unifSample];
-nb_unif = length(unifSample);
+nb_unif = length(unifSample)
 
 # step size
 a = 1.; # not changed for the moment 
@@ -57,7 +57,7 @@ for i in 1:it_max
         #Delta = Delta + U *((U'*(X+ epsilon*I)*U)\U');
     end
     
-    Delta = Delta/nb_samples - unifU*inv(unifU'*nb_unif*I + X)*unifU';
+    Delta = Delta/nb_samples - unifU*inv(unifU'*(nb_unif*I + X)*unifU)*unifU';
     #Delta = Delta/nb_samples - unifU*((unifU'*(I + X)*unifU)\unifU');
     Delta = 0.5*(Delta + Delta');
 
