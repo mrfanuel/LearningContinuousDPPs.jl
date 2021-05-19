@@ -20,8 +20,8 @@ function regularizedPicard(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}
 nb_samples = length(samples); 
 
 # define identity matrix    
-n = size(K,1);
-identity = Diagonal(vec(ones(n,1)));
+m = size(K,1);
+identity = Diagonal(vec(ones(m,1)));
 
 # define inverse kernel matrix    
 invK = inv(K);
@@ -34,35 +34,30 @@ Rinv = inv(R);
 unifU = identity[:,unifSample];
 nb_unif = length(unifSample)
 
-# step size
-a = 1.; # not changed for the moment 
-
 # initialization
 obj = zeros(it_max,1);
 i_stop = it_max;
 
 # initial positive definite iterate
 epsilon = 1e-10; # for positive definiteness
-X = randn(n,n);
+X = randn(m,m);
 X = X*X'+ epsilon*I;
 
 # iterations
 for i in 1:it_max
     # construct  Delta
-    Delta = zeros(n,n);
+    Delta = zeros(m,m);
     for l = 1:nb_samples
         id = samples[l];
         U = identity[:,id];
         Delta = Delta + U *inv(U'*(X+ epsilon*I)*U)*U';
-        #Delta = Delta + U *((U'*(X+ epsilon*I)*U)\U');
     end
     
     Delta = Delta/nb_samples - unifU*inv(unifU'*(nb_unif*I + X)*unifU)*unifU';
-    #Delta = Delta/nb_samples - unifU*((unifU'*(I + X)*unifU)\unifU');
     Delta = 0.5*(Delta + Delta');
 
     # Picard iteration
-    gX = a*X*Delta*X +X;
+    gX = X*Delta*X +X;
 
     # final expression
     temp = real(sqrt(I + 4*lambda*Rinv'*gX*Rinv))

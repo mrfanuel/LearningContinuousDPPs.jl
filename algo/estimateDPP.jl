@@ -116,7 +116,7 @@ function estimateDPP(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64,sigma
 
     
     for i = 0:(s-1)
-        temp = CSV.File("data/sample"*string(i)*"lambda"*string(lambda)*".csv"; header=false) |> Tables.matrix 
+        temp = CSV.File("data/sample"*string(i)*".csv"; header=false) |> Tables.matrix 
         display(plot!(temp[:,1], temp[:,2], seriestype = :scatter, legend = false))
     end
 
@@ -126,5 +126,33 @@ function estimateDPP(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64,sigma
     #display(plot(10:i_stop, obj[10:i_stop], xlabel = "iteration", ylabel = "objective value",
     #title="convergence regularized Picard"))
 
-    return 1;
+    # construct grid
+    n_step = 10;
+
+    X = Array{Float64,2}[];
+    eps = 0.1;
+    t = 0
+    for i in 1:n_step
+        for j in 1:n_step
+            t += 1
+            x = -1 + eps + (2-2*eps)*(i-1)/(n_step-1);
+            y = -1 + eps + (2-2*eps)*(j-1)/(n_step-1);
+            v = [x y];
+            push!(X,v);
+        end
+    end
+        
+    nb_pts_grid = n_step*n_step;
+    GramMatrix = zeros(Float64, nb_pts_grid,nb_pts_grid);
+
+    for i in 1:nb_pts_grid
+        for j in 1:nb_pts_grid
+            v_i = X[i,:][1]';
+            v_j = X[j,:][1]';
+            GramMatrix[i,j] = integralCorrelationKernelFunction(v_i,v_j,K_hat_mat,totalSamples,k,sigma);
+        end
+    end
+
+
+    return GramMatrix;
 end 
