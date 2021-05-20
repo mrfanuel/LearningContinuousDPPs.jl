@@ -1,7 +1,7 @@
 include("algo/estimateMVJacobi.jl")
 
 # number of DPP samples
-s = 4;
+s = 5;
 
 # number of uniform samples for Fredholm
 n = 100 # is better;
@@ -16,12 +16,13 @@ kernel = "SqExponentialKernel"
 # Matern nu, only for Matern (Float64)
 #nu = 0.5; # Laplace
 #nu = 1.5; # linear times Laplace
-nu = 5/2.;
+#nu = 5/2.;
 
 # kernel bw (Float64)
 
 #sigma = 2.; # for Matern larger than SqExponentialKernel
-sigma = 0.5; # for SqExponentialKernel # good 0.5
+#sigma = 0.5; # for SqExponentialKernel # good 0.5
+sigma = 0.5
 
 # regularization (Float64)
 
@@ -44,6 +45,6 @@ tol = 1e-6;
 n_step_plot = 100; 
 
 
-GramMatrix = estimateDPP(s,n,p,kernel,nu,sigma,lambda,epsilon,it_max,tol,n_step_plot);
+GramMatrix = estimateMVJacobi(s,n,p,kernel,nu,sigma,lambda,epsilon,it_max,tol,n_step_plot);
 
 # heatmap(GramMatrix)
