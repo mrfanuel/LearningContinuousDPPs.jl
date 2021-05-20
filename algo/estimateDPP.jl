@@ -29,7 +29,7 @@ function estimateDPP(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64,sigma
     # gather the samples
     for i = 0:(s-1)
         # read files and specify that they start from first row
-        temp = CSV.File("data/sample"*string(i)*".csv"; header=false) |> Tables.matrix 
+        temp = CSV.File("data/MultivariateJacobiOPE_sample"*string(i)*".csv"; header=false) |> Tables.matrix 
         # temp is a matrix with 2 cols
         # add it as a new entry in matSamples
         id_temp = collect((id_last_sample+1):(id_last_sample + size(temp,1)));
