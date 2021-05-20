@@ -1,10 +1,10 @@
 include("algo/estimateMVJacobi.jl")
 
 # number of DPP samples
-s = 5;
+s = 2;
 
 # number of uniform samples for Fredholm
-n = 100 # is better;
+n = 300 # is better;
 
 # number of uniform samples for correlation kernel
 p = 500;
@@ -22,7 +22,8 @@ kernel = "SqExponentialKernel"
 
 #sigma = 2.; # for Matern larger than SqExponentialKernel
 #sigma = 0.5; # for SqExponentialKernel # good 0.5
-sigma = 0.5
+
+sigma = 2. # not bad choice
 
 # regularization (Float64)
 

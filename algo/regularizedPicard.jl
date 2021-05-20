@@ -14,8 +14,6 @@ Compute the a fixed point of the regularized Picard iteration
 """
 function regularizedPicard(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, unifSample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64)
 
-## Warning: test to see if S can be chosen uniformly (it seems to work)
-
 # number of samples
 nb_samples = length(samples); 
 
