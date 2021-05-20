@@ -74,6 +74,9 @@ for i in 1:it_max
     ob = ob+log(det(I + (1/nb_unif)*unifU'*X*unifU)) + lambda*tr(X*invK);
     obj[i] = ob;
 
+    if i%100 == 0
+        print("$(i) / $it_max tolerance $(abs(obj[i]-obj[i-1])/abs(obj[i])) \n")
+    end
     # stopping criterion
     if i>1 && abs(obj[i]-obj[i-1])/abs(obj[i])< tol
         i_stop = i;
