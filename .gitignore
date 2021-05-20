@@ -1,7 +1,10 @@
 .DS_Store
 
-figures/
+figures/*
+figures/.git
 
-data/dppy/samples
+data/dppy/samples/*
+!data/dppy/samples/.gitkeep
 
-data/statspats/samples
+data/statspats/samples/*
+!data/statspats/samples/.gitkeep
