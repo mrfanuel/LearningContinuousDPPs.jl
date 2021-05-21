@@ -2,12 +2,12 @@ using LinearAlgebra
 using KernelFunctions
 using Distributions
 
-function approxCorrelationKernelMatrix(C,p,c,totalSamples,k,sigma)
+function approxCorrelationKernelMatrix(C,p,c_1,c_2,totalSamples,k,sigma)
 
     L = cholesky(C).U;
 
     # number of points for approximating K
-    unifSamples = rand(Uniform(-c,c), p,2);
+    unifSamples = rand(Uniform(c_1,c_2), p,2);
 
     # construct kernel matrices
     x_n = (totalSamples)'/(sigma);
