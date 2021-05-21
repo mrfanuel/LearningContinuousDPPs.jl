@@ -12,6 +12,9 @@ include("algo/approxCorrelationKernelMatrix.jl")
 
 function demoConvergenceExactSolution()
 
+    # type of Picard iteration
+    stable = true;
+
     # width
     sigma = 1.
 
@@ -25,7 +28,7 @@ function demoConvergenceExactSolution()
     it_max = 5000;
 
     # relative objective tolerance
-    tol = 1e-6
+    tol = 1e-7
 
     # create an array of arrays
     idDppSamples = Array{Int64,1}[];
@@ -113,7 +116,18 @@ function demoConvergenceExactSolution()
 
         # final expression
         temp = real(sqrt(I + 4*lambda*Rinv'*gX*Rinv))
-        X = (0.5/lambda)*R'*( temp -I )*R;
+        X_unstable = (0.5/lambda)*R'*( temp -I )*R;
+
+        X_stable = 2*gX*Rinv*inv(real(sqrt(I+4*lambda*Rinv'*gX*Rinv)+I))*R;
+
+        if stable==true
+            # stable
+            X = X_stable;
+        else
+            # unstable
+            X = X_unstable;
+        end
+
 
         diff[i] = norm(X-X_exact)/norm_X_exact;
 
@@ -141,6 +155,7 @@ function demoConvergenceExactSolution()
             print("mean lodet(X_CC) = - $meanlodetXCC\n")
             print("norm(X) = $(norm(X))\n")
             print("norm(X-X_exact)/norm(X_exact) = $(diff[i])\n")
+            print("norm(X_stable-X_unstable) = $(norm(X_stable-X_unstable))\n")
 
         end
         # stopping criterion
