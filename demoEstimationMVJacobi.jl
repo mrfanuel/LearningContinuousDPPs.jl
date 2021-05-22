@@ -3,7 +3,7 @@ include("algo/estimateMVJacobiB.jl")
 # s : number of DPP samples
 
 # number of uniform samples for Fredholm
-n = 50;
+n = 100;
 
 # number of uniform samples for correlation kernel
 p = 500;
@@ -27,7 +27,10 @@ n_step_plot = 100;
 
 GramMatrix = estimateMVJacobiB(s,n,p,kernel,nu,sigma,lambda,epsilon,it_max,tol,n_step_plot);
 
-# heatmap(GramMatrix)
+# normalizedGramMatrix = (1/50.)*GramMatrix;
+# heatmap(normalizedGramMatrix)
+
+# scaledGramMatrix = CSV.File("data/dppy/samples/scaledGramMatrix10x10.csv"; header=false) |> Tables.matrix;
 
 
 

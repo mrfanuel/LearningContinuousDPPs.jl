@@ -1,17 +1,17 @@
-include("algo/estimateGaussianB.jl")
+include("algo/estimateGridB.jl")
 # Here we use the square SqExponentialKernel
 
 # number of DPP samples
-s = 10;
+s = 1;
 
 # number of uniform samples for Fredholm
-n = 100 # 100 is better;
+n = 200 # 100 is better;
 
 # number of uniform samples for correlation kernel
-p = 2000;
+p = 200;
 
 # kernel bw (Float64)
-sigma = 0.1;
+sigma = 1.;
 
 # regularization (Float64)
 lambda =  .01
@@ -29,4 +29,4 @@ tol = 1e-6;
 n_step_plot = 100; 
 
 
-GramMatrix = estimateGaussianB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)
+GramMatrix = estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)

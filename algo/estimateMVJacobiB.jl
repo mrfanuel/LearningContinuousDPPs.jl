@@ -78,7 +78,8 @@ function estimateMVJacobiB(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64
     print("\n")
     print("estimate  correlation kernel...")
     
-    K_hat_mat = approxCorrelationKernelMatrix(C,p,c_1,c_2,totalSamples,k,sigma);
+    d = 2;
+    K_hat_mat = approxCorrelationKernelMatrix(C,p,c_1,c_2,totalSamples,k,sigma,d);
 
     print("\n")
 

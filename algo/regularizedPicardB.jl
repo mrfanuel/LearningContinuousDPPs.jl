@@ -49,7 +49,7 @@ for i in 1:it_max
     obj_det0,ob_reg0 = PicardObjectiveB(B, samples, unifSample, R,lambda);
     obj[i] = obj_det0 + ob_reg0;
 
-    if i%10 == 0
+    if i%100 == 0
         print("---------------------------------------------------------------\n")
         print("$(i) / $it_max\n")
         print("relative objective variation $(abs(obj[i]-obj[i-1])/abs(obj[i]))\n")
