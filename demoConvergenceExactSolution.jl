@@ -5,9 +5,9 @@ using KernelFunctions
 using Distributions
 using DataFrames
 
-include("algo/estimateMVJacobi.jl")
-include("algo/regularizedPicard.jl")
-include("algo/integralCorrelationKernelFunction.jl")
+include("algo/estimateMVJacobiB.jl")
+include("algo/regularizedPicardB.jl")
+include("algo/integralKernelFunction.jl")
 include("algo/approxCorrelationKernelMatrix.jl")
 include("algo/PicardObjectiveB.jl")
 
@@ -186,3 +186,5 @@ function demoConvergenceExactSolution()
 
 
 end
+
+demoConvergenceExactSolution();

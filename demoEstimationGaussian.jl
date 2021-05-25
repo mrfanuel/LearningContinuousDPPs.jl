@@ -34,7 +34,7 @@ epsilon = 1e-7;
 it_max = 10000;
 
 # relative objective tolerance
-tol = 1e-5; #1e-6
+tol = 1e-4; #1e-6
 
 # Plotting number of grid points along x-axis
 n_step_plot = 100; 
@@ -63,9 +63,16 @@ end
 B,K,k,totalSamples = estimateGaussianB(s,n,kernel,nu,sigma,lambda,epsilon,it_max,tol,FredholmSample,merge)
 
 R = cholesky(K).U;
-invR = inv(R);
+#invR = inv(R);
+#C = invR'*B*invR; 
 
-C = invR'*B*invR; 
+T = cholesky(B).U;
+F = (R')\(T');
+
+C = F*F';
+
+
+
 C = 0.5*(C+C');# makes sure it is symmetric
 
 # construct grid n_step x n_step within [eps, 1-eps]^2
