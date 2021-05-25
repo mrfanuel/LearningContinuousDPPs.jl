@@ -8,7 +8,7 @@ using DataFrames
 
 # algo for regularized Picard
 include("regularizedPicardB.jl")
-include("integralCorrelationKernelFunction.jl")
+include("integralKernelFunction.jl")
 include("approxCorrelationKernelMatrix.jl")
 
 function estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)
@@ -71,7 +71,9 @@ function estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)
     c_1 = 0;
     c_2 = 1;
     d = 1;
-    K_hat_mat = approxCorrelationKernelMatrix(C,p,c_1,c_2,totalSamples,k,sigma,d);
+    # number of points for approximating K
+    unifSamples = rand(Uniform(c_1,c_2), p,d);
+    K_hat_mat = approxCorrelationKernelMatrix(C,unifSamples,totalSamples,k,sigma);
 
     print("\n")
 
@@ -85,7 +87,7 @@ function estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)
         t += 1
         x = (i-1)/(n_step_plot-1);
         v[1] = x;
-        intensity[i] = integralCorrelationKernelFunction(v,v,K_hat_mat,totalSamples,k,sigma);
+        intensity[i] = integralKernelFunction(v,v,K_hat_mat,totalSamples,k,sigma);
     end   
 
     # plotting intensity of the estimated process
@@ -110,7 +112,7 @@ function estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)
         for j in 1:nb_pts_grid
             v_i[1] = X[i];
             v_j[1] = X[j];
-            GramMatrix[i,j] = integralCorrelationKernelFunction(v_i,v_j,K_hat_mat,totalSamples,k,sigma);
+            GramMatrix[i,j] = integralKernelFunction(v_i,v_j,K_hat_mat,totalSamples,k,sigma);
         end
     end
 

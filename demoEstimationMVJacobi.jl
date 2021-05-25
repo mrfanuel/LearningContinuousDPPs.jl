@@ -20,7 +20,7 @@ epsilon = 1e-6;
 it_max = 5000;
 
 # relative objective tolerance
-tol = 1e-6;
+tol = 1e-4;
 
 # Plotting number of grid points along x-axis
 n_step_plot = 100; 

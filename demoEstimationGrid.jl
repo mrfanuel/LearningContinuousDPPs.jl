@@ -5,16 +5,16 @@ include("algo/estimateGridB.jl")
 s = 1;
 
 # number of uniform samples for Fredholm
-n = 200 # 100 is better;
+n = 300 # 100 is better;
 
 # number of uniform samples for correlation kernel
 p = 200;
 
 # kernel bw (Float64)
-sigma = 1.;
+sigma = .5;
 
 # regularization (Float64)
-lambda =  .01
+lambda =  .1
 
 # regularizer for K positive definite
 epsilon = 1e-8; 
@@ -23,7 +23,7 @@ epsilon = 1e-8;
 it_max = 5000;
 
 # relative objective tolerance
-tol = 1e-6;
+tol = 1e-3;
 
 # Plotting number of grid points along x-axis
 n_step_plot = 100; 

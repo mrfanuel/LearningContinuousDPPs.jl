@@ -11,7 +11,7 @@ library(parallel)
 ###############################Exemples of using the function MLEDPP#################################
 #####On a rectangular window#####
 #Gauss
-rho0 = 100
+rho0 = 50; # 100 originally
 alpha0 = 0.05
 bound = 1
 

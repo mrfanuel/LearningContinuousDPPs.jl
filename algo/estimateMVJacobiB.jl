@@ -9,7 +9,7 @@ using DataFrames
 
 # algo for regularized Picard
 include("regularizedPicardB.jl")
-include("integralCorrelationKernelFunction.jl")
+include("integralKernelFunction.jl")
 include("approxCorrelationKernelMatrix.jl")
 
 function estimateMVJacobiB(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64,sigma::Float64,lambda::Float64,epsilon::Float64,it_max::Int64,tol::Float64,n_step_plot::Int64)
@@ -39,8 +39,6 @@ function estimateMVJacobiB(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64
         push!(idDppSamples,id_temp);
         totalSamples = [totalSamples; temp];
     end
-
-    # construct Gaussian kernel
 
     print("kernel type: ")
 
@@ -79,7 +77,9 @@ function estimateMVJacobiB(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64
     print("estimate  correlation kernel...")
     
     d = 2;
-    K_hat_mat = approxCorrelationKernelMatrix(C,p,c_1,c_2,totalSamples,k,sigma,d);
+    # number of points for approximating K
+    unifSamples = rand(Uniform(c_1,c_2), p,d);
+    K_hat_mat = approxCorrelationKernelMatrix(C,unifSamples,totalSamples,k,sigma);
 
     print("\n")
 
@@ -96,7 +96,7 @@ function estimateMVJacobiB(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64
             v = [x y]';
             #K_nv=kernelmatrix(k, x_n, v);
             #intensity[i,j] = ((K_nv)'*K_hat_mat*K_nv)[1];
-            intensity[i,j] = integralCorrelationKernelFunction(v,v,K_hat_mat,totalSamples,k,sigma);
+            intensity[i,j] = integralKernelFunction(v,v,K_hat_mat,totalSamples,k,sigma);
         end
     end
 
@@ -154,7 +154,7 @@ function estimateMVJacobiB(s::Int64,n::Int64,p::Int64,kernel::String,nu::Float64
         for j in 1:nb_pts_grid
             v_i = X[i,:][1]';
             v_j = X[j,:][1]';
-            GramMatrix[i,j] = integralCorrelationKernelFunction(v_i,v_j,K_hat_mat,totalSamples,k,sigma);
+            GramMatrix[i,j] = integralKernelFunction(v_i,v_j,K_hat_mat,totalSamples,k,sigma);
         end
     end
 
