@@ -187,4 +187,4 @@ function demoConvergenceExactSolution()
 
 end
 
-demoConvergenceExactSolution();
+B,B_exact = demoConvergenceExactSolution();

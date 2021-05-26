@@ -3,146 +3,126 @@ include("algo/constructSquareGrid.jl")
 include("algo/integralKernelFunction.jl")
 include("algo/approxCorrelationKernelMatrix.jl")
 include("algo/evaluateGramGrid.jl")
+include("algo/correlationKernelGram.jl")
+include("algo/likelihoodKernelGram.jl")
+
 
 # Here we use the square SqExponentialKernel
 
-# number of DPP samples
-s = 1; #s = 3;
+function demoEstimationGaussian()
+    # number of DPP samples
+    s = 5; 
 
-# number of uniform samples for Fredholm
-n = 100; #n = 200 # 100 is good;
+    # number of uniform samples for Fredholm
+    n = 200; 
 
-# number of uniform samples for correlation kernel
-p = 1000;
+    # number of uniform samples for correlation kernel
+    p = 1000;
 
-#kernel = "MaternKernel";#"SqExponentialKernel"
-kernel = "SqExponentialKernel";
+    #kernel = "MaternKernel";
+    kernel = "SqExponentialKernel"; # exp(-d^2/2)
 
-nu = 1/2.;
+    nu = 5/2.;
 
-# kernel bw (Float64)
-sigma = .1; #sigma = 0.5; too large
+    # kernel bw (Float64)
+    sigma = 0.05; ;# last 0.1; # last 0.05
 
-# regularization (Float64)
-#lambda =  1e-8#1e-6; #lambda =  .0001 
-lambda =  1e-8 # 1e-10 # good ?
+    # regularization (Float64)£
+    lambda =  1e-3 # last 1e-4
 
-# regularizer for K positive definite
-epsilon = 1e-7; 
+    # regularizer for K positive definite
+    epsilon = 1e-10; 
 
-# max number of iteration
-it_max = 10000;
+    # max number of iteration
+    it_max = 10000;
 
-# relative objective tolerance
-tol = 1e-4; #1e-6
+    # relative objective tolerance
+    tol = 1e-5; # last 1e-6
 
-# Plotting number of grid points along x-axis
-n_step_plot = 100; 
+    # merge dpp and unif samples
+    merge = false # true improves
 
-# merge dpp and unif samples
-merge = false
+    # type of samples for Fredholm
+    #FredholmSampling = "grid";
+    #
+    #if FredholmSampling == "uniform"
+        #uniform sampling in the box [0,1]^2
+    #    FredholmSample = rand(Uniform(0,1), n,2);
+    #else
+    #    #uniform grid in the box [0,1]^2
+    #    a = 0.; b = 1.;
+    #    FredholmSample = constructFlatSquareGrid(n, a, b)
+    #end
 
-FredholmSampling = "uniform";
-
-# For solving systems in Picard iteration
-meth = "direct";
-
-###################################
-# estimation of likelihood kernel
-###################################
-
-# uniform sampling in the box [0,1]^2
-if FredholmSampling == "uniform"
     FredholmSample = rand(Uniform(0,1), n,2);
-else
-    a = 0.; b = 1.;
-    FredholmSample = constructFlatSquareGrid(n, a, b)
-end
 
+    ###################################
+    # estimation of representer matrix
+    ###################################
 
-B,K,k,totalSamples = estimateGaussianB(s,n,kernel,nu,sigma,lambda,epsilon,it_max,tol,FredholmSample,merge)
+    B, R ,K,k,totalSamples,obj,i_stop = estimateGaussianB(s,n,kernel,nu,sigma,lambda,epsilon,it_max,tol,FredholmSample,merge)
 
-R = cholesky(K).U;
-#invR = inv(R);
-#C = invR'*B*invR; 
+    print("\n")
+    print("cond number of K : $(cond(K))")
+    print("\n")
 
-T = cholesky(B).U;
-F = (R')\(T');
+    R = cholesky(K).U;
 
-C = F*F';
+    ###################################
+    # estimation of likelihood kernel
+    ###################################
 
+    # construct grid of n_test points
+    n_test = 20*20; a = 0.; b = 1.;
+    print("\n")
+    print("test points in [$(a), $(b)]")
+    print("\n")
 
+    testSamples = constructFlatSquareGrid(n_test, a, b);
+    GramA = likelihoodKernelGram(B,R,totalSamples,testSamples,k,sigma);
 
-C = 0.5*(C+C');# makes sure it is symmetric
+    ###################################
+    # estimation of correlation kernel
+    ###################################
+    print("\n")
+    print("estimate  correlation kernel...")
+    print("\n")
 
-# construct grid n_step x n_step within [eps, 1-eps]^2
-n_step = 20;
-a = 0.;
-b = 1.;
-X = constructSquareGrid(n_step, a, b);
+    c_1 = 0.; c_2 = 1.;
+    d = 2;
 
-# evaluate on the grid
-GramMatrixA = evaluateGramGrid(X,C,totalSamples,k,sigma);
+    unifSamples = rand(Uniform(c_1,c_2), p,d);
+    GramK = correlationKernelGram(B,R,unifSamples,totalSamples,testSamples,k,sigma);
 
-###################################
-# estimation of correlation kernel
-###################################
-print("\n")
-print("estimate  correlation kernel...")
+    #savefig( "figures/intensityDiagGaussianMerge.pdf")
 
-c_1 = 0;
-c_2 = 1;
-d = 2;
+    # known result
 
-# number of points for approximating K
-unifSamples = rand(Uniform(c_1,c_2), p,d);
-K_hat_mat = approxCorrelationKernelMatrix(C,unifSamples,totalSamples,k,sigma);
-print("\n")
+    k0 = SqExponentialKernel();
+    alpha0 = 0.05;
+    rho0 = 50;
+    x0 = (testSamples)'/(alpha0/sqrt(2));
 
-###################################
-# Plotting
-###################################
+    GramK0 = rho0*kernelmatrix(k0, x0) + epsilon *I ; # makes sure it is positive definite
 
-print("plotting...")
-intensity = zeros(Float64, n_step_plot,n_step_plot);
+    intensity = diag(GramK);
+    display(plot(intensity,legend=false));
+    display(plot!(50*ones(size(intensity)),legend=false))
 
-for i in 1:n_step_plot
-    for j in 1:n_step_plot
-        x = (i-1)/(n_step_plot-1);
-        y = (j-1)/(n_step_plot-1);
-        v = [x y]';
-        intensity[i,j] = integralKernelFunction(v,v,K_hat_mat,totalSamples,k,sigma);
+    n_max = 30;
+    likelihoodKernel0 = zeros(size(GramA));
+    for i = 1:n_max
+        x0 = (testSamples)'/(sqrt(i)*alpha0/sqrt(2));
+        factor = (1/i^(d/2))*rho0^i * (sqrt(pi)*alpha0)^((i-1)*d)
+        likelihoodKernel0 += factor * kernelmatrix(k0, x0)
     end
-end   
 
-# plotting intensity of the estimated process
+    #intensityA = diag(GramA);
+    #display(plot(intensityA,legend=false));
+    #display(plot!(diag(likelihoodKernel0),legend=false))
 
-x_tics = (0:(1/(n_step_plot-1)):1);
-y_tics = x_tics;
-display(heatmap(x_tics,y_tics,intensity,c=cgrad([:blue, :white,:red, :yellow]),xlabel="x",ylabel="y",title="estimated intensity"))
+    return B, R, GramK, GramA, GramK0, obj, i_stop;
 
-for i = 1:s
-    v0 = totalSamples[(n+1):end,:];
-    display(scatter!(v0[:,1],v0[:,2],color =:red, legend = false))
 end
-display(scatter!(FredholmSample[:,1],FredholmSample[:,2],color = :blue, legend = false))
-display(scatter!(unifSamples[:,1],unifSamples[:,2],color = :black, legend = false))
-
-###################################
-# evaluate GramMatrix
-###################################
-
-# construct grid n_step x n_step within [eps, 1-eps]^2
-n_step = 20;
-a = 0.1;
-b = 1-0.1;
-X = constructSquareGrid(n_step, a, b)
-
-# evaluate on the grid
-GramMatrix = evaluateGramGrid(X,K_hat_mat,totalSamples,k,sigma);
-
-
-d = diag(GramMatrix);
-
 
 

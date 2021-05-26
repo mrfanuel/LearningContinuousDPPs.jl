@@ -116,7 +116,7 @@ function estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)
         end
     end
 
-    return GramMatrix;
+    return GramMatrix,B;
 
 end
 

@@ -11,10 +11,10 @@ n = 300 # 100 is better;
 p = 200;
 
 # kernel bw (Float64)
-sigma = .5;
+sigma = 0.1 #.5;
 
 # regularization (Float64)
-lambda =  .1
+lambda =  1e-5;#.1
 
 # regularizer for K positive definite
 epsilon = 1e-8; 
@@ -29,4 +29,4 @@ tol = 1e-3;
 n_step_plot = 100; 
 
 
-GramMatrix = estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)
+GramMatrix,B = estimateGridB(s,n,p,sigma,lambda,epsilon,it_max,tol,n_step_plot)

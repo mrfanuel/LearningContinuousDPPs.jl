@@ -7,6 +7,7 @@ nb_samples = length(samples);
 
 # define identity matrix    
 m = size(K,1);
+#print("\n m $m \n")
 identity = Diagonal(vec(ones(m,1)));
 
 # Chol decomposition
@@ -31,6 +32,7 @@ for i in 1:it_max
     Delta = zeros(m,m);
     for l = 1:nb_samples
         id = samples[l];
+        #print("\n id $(id)\n")
         U = identity[:,id];
         Delta = Delta + U *inv(U'*(R'*B*R+ epsilon*I)*U)*U';
     end
@@ -71,6 +73,6 @@ for i in 1:it_max
     end
 end
 
-return B, obj, i_stop
+return B, R, obj, i_stop
 
 end
