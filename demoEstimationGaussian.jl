@@ -11,10 +11,10 @@ include("algo/likelihoodKernelGram.jl")
 
 function demoEstimationGaussian()
     # number of DPP samples
-    s = 5; 
+    s = 10; 
 
     # number of uniform samples for Fredholm
-    n = 200; 
+    n = 300; #300
 
     # number of uniform samples for correlation kernel
     p = 1000;
@@ -25,13 +25,13 @@ function demoEstimationGaussian()
     nu = 5/2.;
 
     # kernel bw (Float64)
-    sigma = 0.05; ;# last 0.1; # last 0.05
+    sigma = 0.1; ;# last 0.1; # last 0.05
 
     # regularization (Float64)£
-    lambda =  1e-3 # last 1e-4
+    lambda =  1e-2 # last 1e-4
 
     # regularizer for K positive definite
-    epsilon = 1e-10; 
+    epsilon = 1e-12; 
 
     # max number of iteration
     it_max = 10000;
@@ -41,18 +41,6 @@ function demoEstimationGaussian()
 
     # merge dpp and unif samples
     merge = false # true improves
-
-    # type of samples for Fredholm
-    #FredholmSampling = "grid";
-    #
-    #if FredholmSampling == "uniform"
-        #uniform sampling in the box [0,1]^2
-    #    FredholmSample = rand(Uniform(0,1), n,2);
-    #else
-    #    #uniform grid in the box [0,1]^2
-    #    a = 0.; b = 1.;
-    #    FredholmSample = constructFlatSquareGrid(n, a, b)
-    #end
 
     FredholmSample = rand(Uniform(0,1), n,2);
 
@@ -73,7 +61,7 @@ function demoEstimationGaussian()
     ###################################
 
     # construct grid of n_test points
-    n_test = 20*20; a = 0.; b = 1.;
+    n_test = 30*30; a = 0.; b = 1.;
     print("\n")
     print("test points in [$(a), $(b)]")
     print("\n")
@@ -117,10 +105,8 @@ function demoEstimationGaussian()
         likelihoodKernel0 += factor * kernelmatrix(k0, x0)
     end
 
-    #intensityA = diag(GramA);
-    #display(plot(intensityA,legend=false));
-    #display(plot!(diag(likelihoodKernel0),legend=false))
-
+    #plot(real(eigvals(R'*B*R)), framestyle = :box, legend=false)
+    #plot(real(diag(R'*B*R)), framestyle = :box, legend=false)
     return B, R, GramK, GramA, GramK0, obj, i_stop;
 
 end
