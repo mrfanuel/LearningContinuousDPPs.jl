@@ -1,49 +1,37 @@
-include("algo/estimateMVJacobi.jl")
 
-# number of DPP samples
-s = 4;
+include("algo/estimateMVJacobiB.jl")
+# s : number of DPP samples
 
 # number of uniform samples for Fredholm
-n = 100 # is better;
+n = 100;
 
 # number of uniform samples for correlation kernel
 p = 500;
 
-# type of kernel
-#kernel = "MaternKernel"
-kernel = "SqExponentialKernel"
+# type of kernel and parameters
 
-# Matern nu, only for Matern (Float64)
-#nu = 0.5; # Laplace
-#nu = 1.5; # linear times Laplace
-nu = 5/2.;
-
-# kernel bw (Float64)
-
-#sigma = 2.; # for Matern larger than SqExponentialKernel
-sigma = 0.5; # for SqExponentialKernel # good 0.5
-
-# regularization (Float64)
-
-# for SqExponentialKernel
-lambda =  1.# too large 2# too small 0.5; # good 1.
-
-# for Matern
-#lambda =  0.5; # more or less fine
+#s = 2; kernel = "MaternKernel"; sigma = 1. ;lambda = .01; nu = 5/2.;
+s = 1; kernel = "SqExponentialKernel"; sigma = 1.; lambda = .1; nu = 0.;
 
 # regularizer for K positive definite
-epsilon = 1e-6; # especially for SqExponentialKernel
+epsilon = 1e-6; 
 
 # max number of iteration
 it_max = 5000;
 
 # relative objective tolerance
-tol = 1e-6;
+tol = 1e-4;
 
 # Plotting number of grid points along x-axis
 n_step_plot = 100; 
 
+GramMatrix = estimateMVJacobiB(s,n,p,kernel,nu,sigma,lambda,epsilon,it_max,tol,n_step_plot);
 
-GramMatrix = estimateDPP(s,n,p,kernel,nu,sigma,lambda,epsilon,it_max,tol,n_step_plot);
+# normalizedGramMatrix = (1/50.)*GramMatrix;
+# heatmap(normalizedGramMatrix)
 
-# heatmap(GramMatrix)
+# scaledGramMatrix = CSV.File("data/dppy/samples/scaledGramMatrix10x10.csv"; header=false) |> Tables.matrix;
+
+
+
+

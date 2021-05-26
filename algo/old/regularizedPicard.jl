@@ -14,8 +14,6 @@ Compute the a fixed point of the regularized Picard iteration
 """
 function regularizedPicard(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, unifSample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64)
 
-## Warning: test to see if S can be chosen uniformly (it seems to work)
-
 # number of samples
 nb_samples = length(samples); 
 
@@ -52,7 +50,7 @@ for i in 1:it_max
         U = identity[:,id];
         Delta = Delta + U *inv(U'*(X+ epsilon*I)*U)*U';
     end
-    
+
     Delta = Delta/nb_samples - unifU*inv(unifU'*(nb_unif*I + X)*unifU)*unifU';
     Delta = 0.5*(Delta + Delta');
 
@@ -68,16 +66,33 @@ for i in 1:it_max
     for l = 1:nb_samples
         id = samples[l];
         U = identity[:,id];
-        ob = ob - log(det(U'*X*U+ epsilon*I));
+        ob = ob - logdet(U'*X*U + 1e-10*I);
+        if ob==Inf
+            error("singular determinant in objective")
+        end
     end
+    #print("ob $(ob) \n" )
     ob = ob/nb_samples;
-    ob = ob+log(det(I + (1/nb_unif)*unifU'*X*unifU)) + lambda*tr(X*invK);
+    meanlodetXCC = ob;
+    ob = ob+logdet(I + (1/nb_unif)*unifU'*X*unifU) + lambda*tr(X*invK);
     obj[i] = ob;
 
+    if i%100 == 0
+        print("---------------------------------------------------------------\n")
+        print("$(i) / $it_max\n")
+        print("relative objective variation $(abs(obj[i]-obj[i-1])/abs(obj[i]))\n")
+        print("objective = $ob \n")
+        print("mean lodet(X_CC) = - $meanlodetXCC\n")
+        print("norm(X) = $(norm(X))\n")
+
+    end
     # stopping criterion
     if i>1 && abs(obj[i]-obj[i-1])/abs(obj[i])< tol
         i_stop = i;
+        print("---------------------------------------------------------------\n")
         print("Relative tolerance $(tol) attained after $(i) iterations.\n")
+        print("Final objective= $(obj[i])\n")
+        print("---------------------------------------------------------------\n")
         break
     end
     if i==it_max

@@ -2,7 +2,7 @@
 using LinearAlgebra
 using KernelFunctions
 
-function integralCorrelationKernelFunction(v,w,K_hat_mat,totalSamples,k,sigma)
+function integralKernelFunction(v,w,K_hat_mat,totalSamples,k,sigma)
     
     x_n = (totalSamples)'/(sigma);
 
