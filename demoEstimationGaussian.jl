@@ -22,8 +22,6 @@ function demoEstimationGaussian()
     #kernel = "MaternKernel";
     kernel = "SqExponentialKernel"; # exp(-d^2/2)
 
-    nu = 5/2.;
-
     # kernel bw (Float64)
     sigma = 0.1; ;# last 0.1; # last 0.05
 
@@ -48,7 +46,7 @@ function demoEstimationGaussian()
     # estimation of representer matrix
     ###################################
 
-    B, R ,K,k,totalSamples,obj,i_stop = estimateGaussianB(s,n,kernel,nu,sigma,lambda,epsilon,it_max,tol,FredholmSample,merge)
+    B, R ,K,k,totalSamples,obj,i_stop = estimateGaussianB(s,n,kernel,sigma,lambda,epsilon,it_max,tol,FredholmSample,merge)
 
     print("\n")
     print("cond number of K : $(cond(K))")
