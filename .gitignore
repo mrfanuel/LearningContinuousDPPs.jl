@@ -1,5 +1,7 @@
 .DS_Store
 
+plotting.jl
+
 figures/*
 !figures/.gitkeep
 

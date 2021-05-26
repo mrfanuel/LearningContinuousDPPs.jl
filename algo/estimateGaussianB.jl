@@ -1,6 +1,5 @@
 # import utilities
 using LinearAlgebra
-using Plots
 using CSV
 using KernelFunctions
 using Distributions
@@ -10,7 +9,7 @@ using DataFrames
 include("regularizedPicardB.jl")
 
 
-function estimateGaussianB(s,n,kernel,nu,sigma,lambda,epsilon,it_max,tol,FredholmSample, merge)
+function estimateGaussianB(s,n,sigma,lambda,epsilon,it_max,tol,FredholmSample, merge)
     # create an array of arrays
     idDppSamples = Array{Int64,1}[];
 
@@ -44,14 +43,16 @@ function estimateGaussianB(s,n,kernel,nu,sigma,lambda,epsilon,it_max,tol,Fredhol
 
     x = (totalSamples)'/sigma;
 
-    print("kernel type: ")
-    if kernel=="MaternKernel"
-        k = MaternKernel(;nu);
-        print("Matern kernel \n")
-    else kernel=="SqExponentialKernel"
-        k = SqExponentialKernel();
-        print("SqExponential kernel \n")
-    end
+    #print("kernel type: ")
+    #if kernel=="MaternKernel"
+    #    k = MaternKernel(;nu);
+    #    print("Matern kernel \n")
+    #else kernel=="SqExponentialKernel"
+    #    k = SqExponentialKernel();
+    #    print("SqExponential kernel \n")
+    #end
+
+    k = SqExponentialKernel();
 
     K = kernelmatrix(k, x) + epsilon *I ; # makes sure it is positive definite
 

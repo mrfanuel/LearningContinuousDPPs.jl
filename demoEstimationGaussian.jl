@@ -5,50 +5,20 @@ include("algo/approxCorrelationKernelMatrix.jl")
 include("algo/evaluateGramGrid.jl")
 include("algo/correlationKernelGram.jl")
 include("algo/likelihoodKernelGram.jl")
-
+using JLD
 
 # Here we use the square SqExponentialKernel
 
-function demoEstimationGaussian()
-    # number of DPP samples
-    s = 10; 
-
-    # number of uniform samples for Fredholm
-    n = 300; #300
-
-    # number of uniform samples for correlation kernel
-    p = 1000;
-
-    #kernel = "MaternKernel";
-    kernel = "SqExponentialKernel"; # exp(-d^2/2)
-
-    nu = 5/2.;
-
-    # kernel bw (Float64)
-    sigma = 0.1; ;# last 0.1; # last 0.05
-
-    # regularization (Float64)£
-    lambda =  1e-2 # last 1e-4
-
-    # regularizer for K positive definite
-    epsilon = 1e-12; 
-
-    # max number of iteration
-    it_max = 10000;
-
-    # relative objective tolerance
-    tol = 1e-5; # last 1e-6
-
-    # merge dpp and unif samples
-    merge = false # true improves
+function demoEstimationGaussian(s::Int64=10,n::Int64=200,p::Int64=1000,sigma::Float64=0.05,lambda::Float64=0.1,epsilon::Float64=1e-12,it_max::Int64=10000,tol::Float64=1e-5)
+    
 
     FredholmSample = rand(Uniform(0,1), n,2);
 
     ###################################
     # estimation of representer matrix
     ###################################
-
-    B, R ,K,k,totalSamples,obj,i_stop = estimateGaussianB(s,n,kernel,nu,sigma,lambda,epsilon,it_max,tol,FredholmSample,merge)
+    merge = false;
+    B, R , K, k, totalSamples, obj, i_stop = estimateGaussianB(s,n,sigma,lambda,epsilon,it_max,tol,FredholmSample,merge)
 
     print("\n")
     print("cond number of K : $(cond(K))")
@@ -82,10 +52,6 @@ function demoEstimationGaussian()
     unifSamples = rand(Uniform(c_1,c_2), p,d);
     GramK = correlationKernelGram(B,R,unifSamples,totalSamples,testSamples,k,sigma);
 
-    #savefig( "figures/intensityDiagGaussianMerge.pdf")
-
-    # known result
-
     k0 = SqExponentialKernel();
     alpha0 = 0.05;
     rho0 = 50;
@@ -93,21 +59,17 @@ function demoEstimationGaussian()
 
     GramK0 = rho0*kernelmatrix(k0, x0) + epsilon *I ; # makes sure it is positive definite
 
-    intensity = diag(GramK);
-    display(plot(intensity,legend=false));
-    display(plot!(50*ones(size(intensity)),legend=false))
-
     n_max = 30;
-    likelihoodKernel0 = zeros(size(GramA));
+    GramA0 = zeros(size(GramA));
     for i = 1:n_max
         x0 = (testSamples)'/(sqrt(i)*alpha0/sqrt(2));
         factor = (1/i^(d/2))*rho0^i * (sqrt(pi)*alpha0)^((i-1)*d)
-        likelihoodKernel0 += factor * kernelmatrix(k0, x0)
+        GramA0 += factor * kernelmatrix(k0, x0)
     end
 
-    #plot(real(eigvals(R'*B*R)), framestyle = :box, legend=false)
-    #plot(real(diag(R'*B*R)), framestyle = :box, legend=false)
-    return B, R, GramK, GramA, GramK0, obj, i_stop;
+    filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000*lambda))*"_tol="*string(Int64(1e6*tol))*".jld";
+
+    save(filename, "B",B, "R",R, "n",n, "totalSamples",totalSamples, "GramK",GramK, "GramA",GramA, "GramK0",GramK0, "GramA0",GramA0, "obj",obj, "i_stop",i_stop);
 
 end
 
