@@ -8,7 +8,7 @@ figures/*
 data/dppy/samples/*
 !data/dppy/samples/.gitkeep
 
-results/
+
 
 #data/statspats/samples/*
 #!data/statspats/samples/.gitkeep
