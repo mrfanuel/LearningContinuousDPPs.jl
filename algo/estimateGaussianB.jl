@@ -26,7 +26,8 @@ function estimateGaussianB(s,n,sigma,lambda,epsilon,it_max,tol,FredholmSample, m
     # gather the samples
     for i = 0:(s-1)
         # read files and specify that they start from first row
-        temp = CSV.File("data/statspats/samples/GaussDPPsample_alpha0_00p5_rho0_50_nb_"*string(i+1)*".csv"; header=true) |> Tables.matrix 
+        #temp = CSV.File("data/statspats/samples/GaussDPPsample_alpha0_00p5_rho0_50_nb_"*string(i+1)*".csv"; header=true) |> Tables.matrix 
+        temp = CSV.File("data/statspats/samples/GaussDPPsample_alpha0_00p5_rho0_100_nb_"*string(i+1)*".csv"; header=true) |> Tables.matrix 
         temp = temp[:,2:3];
         print("\nsample $(i+1) has $(size(temp,1)) points\n")
         # temp is a matrix with 2 cols
