@@ -1,6 +1,6 @@
 .DS_Store
 
-plotting.jl
+#plotting.jl
 
 figures/*
 !figures/.gitkeep
@@ -11,4 +11,4 @@ data/dppy/samples/*
 results/*
 
 #data/statspats/samples/*
-#!data/statspats/samples/.gitkeep
+#!data/statspats/samples/.gitkeep 
