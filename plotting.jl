@@ -58,7 +58,7 @@ using Plots
 
 #D = load("results/results100/results/result_s=3_n=1000_p=1000_sigma=50_lambda=10000_tol=10.jld");sigma = 0.05;
 
-D = load("results/results100/results/result_s=3_n=1000_p=1000_sigma=50_lambda=1000_tol=10.jld");sigma = 0.05;
+#D = load("results/results100/results/result_s=3_n=1000_p=1000_sigma=50_lambda=1000_tol=10.jld");sigma = 0.05;
 
 ### s =5  ##############
 
@@ -88,6 +88,17 @@ D = load("results/results100/results/result_s=3_n=1000_p=1000_sigma=50_lambda=10
 
 #D = load("results/results100/results/result_s=10_n=1000_p=1000_sigma=50_lambda=5_tol=10.jld")
 #sigma = 0.05;
+
+### small lambda %%% s = 3
+
+D = load("results/results100LambdaSmall/result_s=3_n=1000_p=1000_sigma=100_lambda=100divideBy1Million_tol=10.jld"); sigma = 0.1;
+# lambda = 1e-4
+
+#D = load("results/results100LambdaSmall/result_s=3_n=1000_p=1000_sigma=100_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.1;
+# also good ! lambda = 1e-5
+
+#D = load("results/results100LambdaSmall/result_s=3_n=1000_p=1000_sigma=80_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.08;
+# intensity good SM ???? lambda = 1e-5
 
 
 ###############################################
@@ -134,7 +145,7 @@ IntensityGramK = reshape(diag(GramKDense),(100,100));
 
 x_tics = 0:(1/99):1;
 y_tics = x_tics;
-heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10))
+display(heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10)))
 
 
 # likelihood kernel
