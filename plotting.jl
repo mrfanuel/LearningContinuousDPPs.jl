@@ -43,13 +43,22 @@ using Plots
 #D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=50_lambda=100_tol=10.jld");sigma = 0.05;
 
 # with sigma = 0.1 and lambda = 0.1 PAPER
-D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=100_lambda=100_tol=10.jld");sigma = 0.1;
+#D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=100_lambda=100_tol=10.jld");sigma = 0.1;
 
 # with sigma = 0.1 and lambda = 0.01 PAPER
 #D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=100_lambda=10_tol=10.jld");sigma = 0.1;
 
 #D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=100_lambda=1_tol=10.jld")
 #sigma = 0.1
+### s = 3  ##############
+
+# lambda=1
+#D = load("results/results100/results/result_s=3_n=1000_p=1000_sigma=100_lambda=1000_tol=10.jld");sigma = 0.1; # very uniform
+
+
+#D = load("results/results100/results/result_s=3_n=1000_p=1000_sigma=50_lambda=10000_tol=10.jld");sigma = 0.05;
+
+D = load("results/results100/results/result_s=3_n=1000_p=1000_sigma=50_lambda=1000_tol=10.jld");sigma = 0.05;
 
 ### s =5  ##############
 

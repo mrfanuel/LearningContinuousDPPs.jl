@@ -67,7 +67,9 @@ function demoEstimationGaussian(s::Int64=10,n::Int64=200,p::Int64=1000,sigma::Fl
         GramA0 += factor * kernelmatrix(k0, x0)
     end
 
-    filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000*lambda))*"_tol="*string(Int64(1e6*tol))*".jld";
+    #filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000*lambda))*"_tol="*string(Int64(1e6*tol))*".jld";
+
+    filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000000*lambda))*"divideBy1Million_tol="*string(Int64(1e6*tol))*".jld";
 
     save(filename, "B",B, "R",R, "n",n, "totalSamples",totalSamples, "GramK",GramK, "GramA",GramA, "GramK0",GramK0, "GramA0",GramA0, "obj",obj, "i_stop",i_stop);
 
