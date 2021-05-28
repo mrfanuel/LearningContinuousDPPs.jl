@@ -1,19 +1,30 @@
 
+# In the jld file name lambda and sigma have to be divided by 1000
+
 ####### results for rho = 50 #####################
-# 1DPP sample with sigma = 0.1 and n= 1000
+
+# with sigma = 0.1 lambda = 0.1 PAPER
 #D = load("results/results50/result_s=1_n=1000_p=1000_sigma=100_lambda=100_tol=10.jld");
+#sigma = 0.1
 
 ## with sigma = 0.05 and n = 1000
 #D = load("results/results50/result_s=10_n=1000_p=1000_sigma=50_lambda=10_tol=1.jld");
+#sigma = 0.05
 
 ## with sigma = 0.05 and n = 500
 #D = load("results/results50/result_s=10_n=500_p=1000_sigma=50_lambda=1_tol=1.jld");
+#sigma = 0.05;
+
 #D = load("results/results50/result_s=10_n=500_p=1000_sigma=50_lambda=10_tol=1.jld");
+#sigma = 0.05;
+
 #D = load("results/results50/result_s=10_n=500_p=1000_sigma=50_lambda=100_tol=1.jld");
 #sigma = 0.05;
 
 ## with sigma = 0.1 and n= 500
 #D = load("results/results50/result_s=10_n=500_p=1000_sigma=100_lambda=100_tol=1.jld");
+#sigma = 0.1;
+
 #D = load("results/results50/result_s=10_n=500_p=1000_sigma=100_lambda=100_tol=1.jld");
 #sigma = 0.1;
 
@@ -25,18 +36,34 @@
 
 ### s = 1 ##############
 
-
 ## with sigma = 0.1 and n= 500
 #D = load("results/results100/results/result_s=1_n=500_p=1000_sigma=100_lambda=100_tol=10.jld"); sigma = 0.1;
 
 #D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=50_lambda=100_tol=10.jld");sigma = 0.05;
 
+# with sigma = 0.1 and lambda = 0.1 PAPER
 #D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=100_lambda=100_tol=10.jld");sigma = 0.1;
 
+# with sigma = 0.1 and lambda = 0.01 PAPER
 #D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=100_lambda=10_tol=10.jld");sigma = 0.1;
 
 #D = load("results/results100/results/result_s=1_n=1000_p=1000_sigma=100_lambda=1_tol=10.jld")
 #sigma = 0.1
+
+### s =5  ##############
+
+#D = load("results/results100/results/result_s=5_n=1000_p=1000_sigma=100_lambda=1_tol=10.jld")
+#sigma = 0.1;#lambda = 0.001
+
+#D = load("results/results100/results/result_s=5_n=1000_p=1000_sigma=50_lambda=100_tol=10.jld")
+#sigma = 0.05; #lambda = 0.1
+
+#D = load("results/results100/results/result_s=5_n=1000_p=1000_sigma=50_lambda=1_tol=10.jld")
+#sigma = 0.05; #lambda = 0.001
+
+#D = load("results/results100/results/result_s=5_n=1000_p=1000_sigma=50_lambda=10_tol=10.jld")
+#sigma = 0.05; #lambda = 0.01
+
 
 ### s = 10 ##############
 
@@ -48,6 +75,9 @@
 
 #D = load("results/results100/results/result_s=10_n=500_p=1000_sigma=100_lambda=10_tol=10.jld")
 #sigma = 0.1;
+
+#D = load("results/results100/results/result_s=10_n=1000_p=1000_sigma=50_lambda=5_tol=10.jld")
+#sigma = 0.05;
 
 
 ###############################################
