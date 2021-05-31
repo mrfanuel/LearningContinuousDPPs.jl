@@ -89,16 +89,30 @@ using Plots
 #D = load("results/results100/results/result_s=10_n=1000_p=1000_sigma=50_lambda=5_tol=10.jld")
 #sigma = 0.05;
 
-### small lambda %%% s = 3
+### small lambda %%% s = 3 (divide lambda by 10^6)
 
-D = load("results/results100LambdaSmall/result_s=3_n=1000_p=1000_sigma=100_lambda=100divideBy1Million_tol=10.jld"); sigma = 0.1;
+#
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=100_lambda=100divideBy1Million_tol=10.jld"); sigma = 0.1;
 # lambda = 1e-4
 
-#D = load("results/results100LambdaSmall/result_s=3_n=1000_p=1000_sigma=100_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.1;
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=100_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.1;
 # also good ! lambda = 1e-5
 
-#D = load("results/results100LambdaSmall/result_s=3_n=1000_p=1000_sigma=80_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.08;
-# intensity good SM ???? lambda = 1e-5
+#
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=80_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.08; #lambda = 1e-5
+# Very good intensity to put in SM ???? lambda = 1e-5
+
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=80_lambda=1divideBy1Million_tol=10.jld"); sigma = 0.08; lambda = 1e-6;
+
+# with 10 dpp samples
+
+
+D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=50_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.05; # lambda = 1e-5;
+
+#D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=80_lambda=10divideBy1Million_tol=10.jld");sigma = 0.08; # lambda = 1e-5;
+
+#D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=100_lambda=100divideBy1Million_tol=10.jld");sigma = 0.1; # lambda = 1e-4;
+# not bad
 
 
 ###############################################
@@ -132,7 +146,7 @@ plot(l,legend = false,framestyle=:box,xtickfont = font(10),ytickfont = font(10),
 #savefig("figures/EigenDecay.pdf")
 
 # heatmap correlation kernel 
-c_1 = 0.; c_2 = 1.;d = 2;p = 1000;
+c_1 = 0.; c_2 = 1.;d = 2;p = 15000;
 
 n_test = 100*100; a = 0.; b = 1.;
 testSamplesDense = constructFlatSquareGrid(n_test, a, b);
@@ -146,6 +160,26 @@ IntensityGramK = reshape(diag(GramKDense),(100,100));
 x_tics = 0:(1/99):1;
 y_tics = x_tics;
 display(heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10)))
+
+
+# smaller grid to remove boundary
+# heatmap correlation kernel 
+
+#c_1 = 0.; c_2 = 1.;d = 2;p = 2000; # domain: do not modify
+
+#n_test = 100*100; a = 0.1; b = 0.9;
+#testSamplesDenseSmall = constructFlatSquareGrid(n_test, a, b);
+
+#unifSamples = rand(Uniform(c_1,c_2), p,d);
+#k = SqExponentialKernel();
+
+#GramKDenseSmall = correlationKernelGram(B,R,unifSamples,totalSamples,testSamplesDenseSmall,k,sigma);
+#IntensityGramKSmall = reshape(diag(GramKDenseSmall),(100,100));
+
+#x_tics = a:((b-a)/99):b;
+#y_tics = x_tics;
+#display(heatmap(x_tics,y_tics,IntensityGramKSmall,colorbar = true,xtickfont = font(10),ytickfont = font(10)))
+#display(scatter!(unifSamples[:,1],unifSamples[:,2]))
 
 
 # likelihood kernel
