@@ -77,11 +77,9 @@ using Plots
 
 ### s = 10 ##############
 
-#D = load("results/results100/results/result_s=10_n=500_p=1000_sigma=50_lambda=1_tol=10.jld")
-#sigma = 0.05; # not too bad sigma too small
+#D = load("results/results100/results/result_s=10_n=500_p=1000_sigma=50_lambda=1_tol=10.jld");sigma = 0.05; # not too bad sigma too small
 
-#D = load("results/results100/results/result_s=10_n=500_p=1000_sigma=100_lambda=1_tol=10.jld")
-#sigma = 0.1; #Good one
+#D = load("results/results100/results/result_s=10_n=500_p=1000_sigma=100_lambda=1_tol=10.jld");sigma = 0.1; #itensity too small
 
 #D = load("results/results100/results/result_s=10_n=500_p=1000_sigma=100_lambda=10_tol=10.jld")
 #sigma = 0.1;
@@ -91,9 +89,11 @@ using Plots
 
 ### small lambda %%% s = 3 (divide lambda by 10^6)
 
-#
-#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=100_lambda=100divideBy1Million_tol=10.jld"); sigma = 0.1;
+########## GOOD ##################
+D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=100_lambda=100divideBy1Million_tol=10.jld"); sigma = 0.1;
+# good one for comparing the decays
 # lambda = 1e-4
+####################################
 
 #D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=100_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.1;
 # also good ! lambda = 1e-5
@@ -104,15 +104,37 @@ using Plots
 
 #D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=80_lambda=1divideBy1Million_tol=10.jld"); sigma = 0.08; lambda = 1e-6;
 
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=80_lambda=100divideBy1Million_tol=10.jld"); sigma = 0.08; #lambda = 1e-6;
+
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=50_lambda=100divideBy1Million_tol=10.jld");sigma = 0.05;
+# lmabda = 0.0001
+
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=50_lambda=500divideBy1Million_tol=10.jld");sigma = 0.05;
+# lmabda = 0.0005
+
+#D = load("results/results100LambdaSmall/results/result_s=3_n=1000_p=1000_sigma=80_lambda=100divideBy1Million_tol=10.jld"); sigma = 0.08; 
+#lambda = 1e-4; a bit too low intensity
+
+
 # with 10 dpp samples
 
-
-D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=50_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.05; # lambda = 1e-5;
+#D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=50_lambda=10divideBy1Million_tol=10.jld"); sigma = 0.05; # lambda = 1e-5;
 
 #D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=80_lambda=10divideBy1Million_tol=10.jld");sigma = 0.08; # lambda = 1e-5;
 
+####### GOOD ###########
 #D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=100_lambda=100divideBy1Million_tol=10.jld");sigma = 0.1; # lambda = 1e-4;
-# not bad
+# Good ! a bit too low intensity
+########################
+
+# too large sigma
+#D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=150_lambda=100divideBy1Million_tol=10.jld");sigma = 0.15;
+
+# too large sigma
+#D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=150_lambda=500divideBy1Million_tol=10.jld");sigma = 0.15;
+
+# too large sigma
+#D = load("results/results100LambdaSmall/results/result_s=10_n=1000_p=1000_sigma=150_lambda=1000divideBy1Million_tol=10.jld");sigma = 0.15;
 
 
 ###############################################
@@ -159,7 +181,7 @@ IntensityGramK = reshape(diag(GramKDense),(100,100));
 
 x_tics = 0:(1/99):1;
 y_tics = x_tics;
-display(heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10)))
+display(heatmap(x_tics,y_tics,IntensityGramK,title = "intensity on [0.,1.]^2",colorbar = true,xtickfont = font(10),ytickfont = font(10)))
 
 
 # smaller grid to remove boundary
@@ -183,8 +205,12 @@ display(heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10
 
 
 # likelihood kernel
-#A_insample = likelihoodKernelGram(B,R,totalSamples,totalSamples,k,sigma);
-#GramADense = likelihoodKernelGram(B,R,totalSamples,testSamplesDense,k,sigma);
+A_insample = likelihoodKernelGram(B,R,totalSamples,totalSamples,k,sigma);
+GramADense = likelihoodKernelGram(B,R,totalSamples,testSamplesDense,k,sigma);
+IntensityGramA = reshape(diag(GramADense),(100,100));
+
+display(heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10)))
+
 #scatter(testSamplesDense[:,1],testSamplesDense[:,2],zcolor=diag(GramADense),marker = :dot,legend = false,colorbar = true,xtickfont = font(10),ytickfont = font(10))
 #eigGramA = eigvals(GramA/size(GramA,1));
 #eigGramK = eigvals(GramK/size(GramK,1));
