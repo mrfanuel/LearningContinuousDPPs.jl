@@ -54,10 +54,10 @@ function demoEstimationGaussian(s::Int64=10,n::Int64=200,p::Int64=1000,sigma::Fl
 
     k0 = SqExponentialKernel();
     alpha0 = 0.05;
-    rho0 = 50;
+    rho0 = 100;
     x0 = (testSamples)'/(alpha0/sqrt(2));
 
-    GramK0 = rho0*kernelmatrix(k0, x0) + epsilon *I ; # makes sure it is positive definite
+    GramK0 = rho0*kernelmatrix(k0, x0) + epsilon *I ; # positive definite
 
     n_max = 30;
     GramA0 = zeros(size(GramA));
@@ -67,7 +67,6 @@ function demoEstimationGaussian(s::Int64=10,n::Int64=200,p::Int64=1000,sigma::Fl
         GramA0 += factor * kernelmatrix(k0, x0)
     end
 
-    #filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000*lambda))*"_tol="*string(Int64(1e6*tol))*".jld";
 
     filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000000*lambda))*"divideBy1Million_tol="*string(Int64(1e6*tol))*".jld";
 
