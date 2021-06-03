@@ -66,10 +66,11 @@ plot(l,legend = false,framestyle=:box,xtickfont = font(10),ytickfont = font(10),
 # heatmap estimated correlation kernel 
 c_1 = 0.; c_2 = 1.;d = 2;p = 15000;
 
-#n_test = 100*100;
-side = 30;
+side = 100;
+#side = 30;
 n_test = side*side;
-a = 0.2; b = .8; print("Smaller grid")
+#a = 0.2; b = .8; print("Smaller grid")
+a = 0.; b = 1.;
 testSamplesDense = constructFlatSquareGrid(n_test, a, b);
 
 unifSamples = rand(Uniform(c_1,c_2), p,d);
@@ -78,9 +79,9 @@ k = SqExponentialKernel();
 GramKDense = correlationKernelGram(B,R,unifSamples,totalSamples,testSamplesDense,k,sigma);
 IntensityGramK = reshape(diag(GramKDense),(side,side));
 
-#x_tics = a:(1/(side-1)):b;
-#y_tics = x_tics;
-#display(heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10)))
+x_tics = 0:(1/99):1;
+y_tics = x_tics;
+display(heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10)))
 
 # heatmap exact correlation kernel 
 
