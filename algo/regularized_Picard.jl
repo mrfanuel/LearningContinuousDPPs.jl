@@ -1,13 +1,10 @@
-include("PicardObjectiveB.jl")
-
-function regularizedPicardB(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, unifSample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64)
+function regularized_Picard(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, unifSample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64)
 
 # number of samples
 nb_samples = length(samples); 
 
 # define identity matrix    
 m = size(K,1);
-#print("\n m $m \n")
 identity = Diagonal(vec(ones(m,1)));
 
 # Chol decomposition
@@ -32,7 +29,6 @@ for i in 1:it_max
     Delta = zeros(m,m);
     for l = 1:nb_samples
         id = samples[l];
-        #print("\n id $(id)\n")
         U = identity[:,id];
         Delta = Delta + U *inv(U'*(R'*B*R+ epsilon*I)*U)*U';
     end
@@ -75,4 +71,34 @@ end
 
 return B, R, obj, i_stop
 
+end
+
+function PicardObjectiveB(B, samples, FredholmSample, R,lambda)
+
+    # identity matrix
+    m = size(B,1);
+    identity = Diagonal(vec(ones(m,1)));
+
+    # number of dpp samples
+    nb_samples = length(samples); 
+
+    # samples Fredholm
+    unifU = identity[:,FredholmSample];
+    nb_unif = length(FredholmSample)
+
+    PhiBPhi = R'*B*R;
+    ob = 0
+    for l = 1:nb_samples
+        id = samples[l];
+        U = identity[:,id];
+        ob = ob - logdet(U'*PhiBPhi*U);
+        if ob==Inf
+            error("singular determinant in objective")
+        end
+    end
+    ob = ob/nb_samples;
+    ob = ob+logdet(I + (1/nb_unif)*unifU'*PhiBPhi*unifU);
+    ob_reg = lambda*tr(B);
+
+    return ob, ob_reg;
 end

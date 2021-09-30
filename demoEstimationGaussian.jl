@@ -1,4 +1,4 @@
-include("algo/estimateGaussianB.jl")
+include(".jl")
 include("algo/constructSquareGrid.jl")
 include("algo/integralKernelFunction.jl")
 include("algo/approxCorrelationKernelMatrix.jl")
@@ -9,7 +9,7 @@ using JLD
 
 # Here we use the square SqExponentialKernel
 
-function demoEstimationGaussian(s::Int64=10,n::Int64=200,p::Int64=1000,sigma::Float64=0.05,lambda::Float64=0.1,epsilon::Float64=1e-12,it_max::Int64=10000,tol::Float64=1e-5)
+function estimateDPPfromSamples(s::Int64=10,n::Int64=200,p::Int64=1000,sigma::Float64=0.05,lambda::Float64=0.1,epsilon::Float64=1e-12,it_max::Int64=10000,tol::Float64=1e-5)
     
 
     FredholmSample = rand(Uniform(0,1), n,2);
