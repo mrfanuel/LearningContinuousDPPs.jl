@@ -29,25 +29,6 @@ function correlationKernelGram(B,R,unifSamples,totalSamples,testSamples,k,sigma)
     return GramK;
 end
 
-function approxCorrelationKernelMatrix(C,unifSamples,totalSamples,k,sigma)
-
-    L = cholesky(C).U;
-
-    # construct kernel matrices
-    x_n = (totalSamples)'/(sigma);
-    x_p = (unifSamples)'/(sigma);
-    K_np = kernelmatrix(k, x_n, x_p);
-
-    M = L*(K_np*(1/p)*K_np')*L' + I; 
-    M = 0.5*(M+M'); 
-    
-    T = cholesky(M).U;
-    F = (T')\L; 
-    K_hat_mat = F'*F;
-
-    return K_hat_mat;
-end
-
 
 function likelihoodKernelGram(B,R,totalSamples,testSamples,k,sigma)
 

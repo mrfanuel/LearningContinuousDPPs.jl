@@ -1,18 +1,17 @@
-function regularized_Picard(K::Array{Float64,2}, samples::Array{Array{Int64,1},1}, unifSample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64)
 
-# number of samples
-nb_samples = length(samples); 
+using SparseArrays, LinearAlgebra
+function regularized_Picard(K::Array{Float64,2}, dpp_samples::Array{Array{Int64,1},1}, unif_sample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64,use_inverse::Bool)
 
-# define identity matrix    
+# number of dpp_samples
+nb_dpp_samples = length(dpp_samples); 
+
 m = size(K,1);
-identity = Diagonal(vec(ones(m,1)));
 
 # Chol decomposition
 R = cholesky(K).U;
 
 # sampling matrix for uniformSample
-unifU = identity[:,unifSample];
-nb_unif = length(unifSample)
+nb_unif = length(unif_sample)
 
 # initialization
 obj = zeros(it_max,1);
@@ -21,41 +20,59 @@ i_stop = it_max;
 # initial positive definite iterate
 epsilon = 1e-10; # for positive definiteness
 X = randn(m,m);
-B = X*X'+ 1e-14*I;
+B = X*X'+ UniformScaling(epsilon);
 
 # iterations
 for i in 1:it_max
     # construct  Delta
-    Delta = zeros(m,m);
-    for l = 1:nb_samples
-        id = samples[l];
-        U = identity[:,id];
-        Delta = Delta + U *inv(U'*(R'*B*R+ epsilon*I)*U)*U';
+    BRDeltaRtB = zeros(m,m);
+    RtBR = R'*B*R
+    BR = B*R
+    for l = 1:nb_dpp_samples
+        id = dpp_samples[l];
+        M = (RtBR + UniformScaling(epsilon))[id,id]
+        BRid = BR[:,id]
+        if use_inverse
+            BRDeltaRtB +=  BRid * inv(M) * BRid';
+        else
+            BRDeltaRtB +=  BRid * (M\(BRid'));
+        end
     end
 
-    Delta = Delta/nb_samples - unifU*inv(unifU'*(nb_unif*I + R'*B*R)*unifU)*unifU';
-    Delta = 0.5*(Delta + Delta');
+    N = (RtBR + UniformScaling(nb_unif))[unif_sample,unif_sample]
+    BRunif = BR[:,unif_sample]
+    if use_inverse
+        BRDeltaRtB = BRDeltaRtB/nb_dpp_samples - BRunif*inv(N)*BRunif';
+    else
+        BRDeltaRtB = BRDeltaRtB/nb_dpp_samples - BRunif*(N\(BRunif'));
+    end
+
+    BRDeltaRtB = 0.5*(BRDeltaRtB + BRDeltaRtB');
 
     # Picard iteration
-    pB = B + B*R*Delta*R'*B;
+    pB = B + BRDeltaRtB;
 
     # final expression
     B = (0.5/lambda)*(real(sqrt(I+4*lambda*pB))-I);
     B = 0.5*(B+B');
 
     # track the objective values
-    obj_det0,ob_reg0 = PicardObjectiveB(B, samples, unifSample, R,lambda);
-    obj[i] = obj_det0 + ob_reg0;
+    obj_det,ob_reg = PicardObjectiveB(B, dpp_samples, unif_sample, R,lambda);
+    obj[i] = obj_det + ob_reg;
+
+    
 
     if i%100 == 0
+        rel_variation = abs(obj[i]-obj[i-1])/abs(obj[i])
         print("---------------------------------------------------------------\n")
         print("$(i) / $it_max\n")
-        print("relative objective variation $(abs(obj[i]-obj[i-1])/abs(obj[i]))\n")
+        print("relative objective variation $(rel_variation)\n")
         print("objective = $(obj[i]) \n")
         print("norm(B) = $(norm(B))\n")
 
     end
     # stopping criterion
+    
     if i>1 && abs(obj[i]-obj[i-1])/abs(obj[i])< tol
         i_stop = i;
         print("---------------------------------------------------------------\n")
@@ -65,7 +82,7 @@ for i in 1:it_max
         break
     end
     if i==it_max
-        print("iteration has not yet converged.")
+        print("iteration has not yet converged.\n")
     end
 end
 
@@ -73,32 +90,26 @@ return B, R, obj, i_stop
 
 end
 
-function PicardObjectiveB(B, samples, FredholmSample, R,lambda)
-
-    # identity matrix
-    m = size(B,1);
-    identity = Diagonal(vec(ones(m,1)));
+function PicardObjectiveB(B, dpp_samples, Fredholm_sample, R,lambda)
 
     # number of dpp samples
-    nb_samples = length(samples); 
+    nb_dpp_samples = length(dpp_samples); 
 
     # samples Fredholm
-    unifU = identity[:,FredholmSample];
-    nb_unif = length(FredholmSample)
+    nb_unif = length(Fredholm_sample)
 
     PhiBPhi = R'*B*R;
-    ob = 0
-    for l = 1:nb_samples
-        id = samples[l];
-        U = identity[:,id];
-        ob = ob - logdet(U'*PhiBPhi*U);
-        if ob==Inf
-            error("singular determinant in objective")
+    ob_det = 0
+    for l = 1:nb_dpp_samples
+        id = dpp_samples[l];
+        ob_det -= logdet(PhiBPhi[id,id]);
+        if ob_det==Inf
+            error("singular determinant in objective\n")
         end
     end
-    ob = ob/nb_samples;
-    ob = ob+logdet(I + (1/nb_unif)*unifU'*PhiBPhi*unifU);
+    ob_det = ob_det/nb_dpp_samples;
+    ob_det += logdet(I + (1/nb_unif)*PhiBPhi[Fredholm_sample,Fredholm_sample]);
     ob_reg = lambda*tr(B);
 
-    return ob, ob_reg;
+    return ob_det, ob_reg;
 end

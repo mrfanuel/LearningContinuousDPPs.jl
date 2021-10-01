@@ -5,35 +5,37 @@ using KernelFunctions
 using Distributions
 using DataFrames
 
-include("algo/estimateMVJacobiB.jl")
-include("algo/regularizedPicardB.jl")
-include("algo/integralKernelFunction.jl")
-include("algo/approxCorrelationKernelMatrix.jl")
-include("algo/PicardObjectiveB.jl")
+include("../algo/estimateMVJacobiB.jl")
+include("../algo/regularizedPicardB.jl")
+include("../algo/integralKernelFunction.jl")
+include("../algo/approxCorrelationKernelMatrix.jl")
+include("../algo/PicardObjectiveB.jl")
+
+# TO BE REWRITTEN!!!!
 
 function demoConvergenceExactSolution()
 
     # width
-    sigma = .1
+    sigma = .5
 
     # regularizer
-    lambda =  .1# too large 2# too small 0.5; # good 1.
+    lambda =  1.# too large 2# too small 0.5; # good 1.
 
     # regularizer for positive definiteness
-    epsilon = 1e-10; 
+    epsilon = 1e-14; 
 
     # max number of iteration
     it_max = 5000;
 
     # relative objective tolerance
-    tol = 1e-7
+    tol = 1e-6
 
     # create an array of arrays
     idDppSamples = Array{Int64,1}[];
 
     # load one DPP sample 
     i = 1;
-    temp = CSV.File("data/statspats/samples/GaussDPPsample_alpha0_00p5_rho0_100_nb_"*string(i+1)*".csv"; header=true) |> Tables.matrix  
+    temp = CSV.File("data/dppy/samples/MultivariateJacobiOPE_sample"*string(i)*".csv"; header=false) |> Tables.matrix 
 
     # number of rows
     n = size(temp,1);
@@ -155,21 +157,23 @@ function demoConvergenceExactSolution()
     r = i_start:i_stop;
 
     # relative error
-    plt_error = plot(r, diff[r], yaxis=:log, legend = false,xtickfont = font(10),ytickfont = font(10),linewidth = 3,framestyle=:box);
+    plt_error = plot(r, diff[r], yaxis=:log, legend = false);
     xlabel!("iterations")
     ylabel!("relative error")
     display(plt_error)
-    savefig("figures/demo_Gaussian_1_dppSamples_100_points_error.pdf")
+    savefig("figures/demo_MVJacobi_plot_1_dppSamples_50_points_error.pdf")
 
 
     # objective decay
-    #objective_optimal = ones(size(obj))*obj_exact;
-    #plt_objective = plot(r, obj[r],legend = false,linewidth = 3);
-    #plot!(r, objective_optimal[r],legend = false,xtickfont = font(10),ytickfont = font(10),linewidth = 3,framestyle=:box);
-    #xlabel!("iterations")
-    #ylabel!("objective")
-    #display(plt_objective)
-    #savefig("figures/demo_Gaussian_1_dppSamples_100_points_objective.pdf")
+    objective_optimal = ones(size(obj))*obj_exact;
+
+    plt_objective = plot(r, obj[r],legend = false);
+    plot!(r, objective_optimal[r],legend = false);
+
+    xlabel!("iterations")
+    ylabel!("objective")
+    display(plt_objective)
+    savefig("figures/demo_MVJacobi_plot_1_dppSamples_50_points_objective.pdf")
 
     # objective det 
     #objective_optimal_det = ones(size(obj))*obj_exact_det;
