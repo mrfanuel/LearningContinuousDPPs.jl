@@ -1,6 +1,6 @@
 
 using SparseArrays, LinearAlgebra
-function regularized_Picard(K::Array{Float64,2}, dpp_samples::Array{Array{Int64,1},1}, unif_sample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64,use_inverse::Bool)
+function regularized_Picard(B::Array{Float64,2},K::Array{Float64,2}, dpp_samples::Array{Array{Int64,1},1}, unif_sample::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64,use_inverse::Bool)
 
 # number of dpp_samples
 nb_dpp_samples = length(dpp_samples); 
@@ -17,10 +17,6 @@ nb_unif = length(unif_sample)
 obj = zeros(it_max,1);
 i_stop = it_max;
 
-# initial positive definite iterate
-epsilon = 1e-10; # for positive definiteness
-X = randn(m,m);
-B = X*X'+ UniformScaling(epsilon);
 
 # iterations
 for i in 1:it_max

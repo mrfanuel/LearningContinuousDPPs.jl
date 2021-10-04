@@ -6,25 +6,24 @@ include("../algo/kernels.jl")
 include("../algo/regularized_Picard.jl")
 include("../algo/utils.jl")
 
-function estimate_Gaussian()
-
-    # number of DPP samples used for the estimation (from 1 to 10)
-    s = 1;
-    # number of points for approximating Fredholm determinant (the larger the better)
-    n = 500;
-    # Gaussian kernel bandwidth
-    sigma = 0.1;
-    # regularization parameter
-    lambda = 1e-3;
-    # constant added on diagonal of matrices
-    epsilon = 1e-10;
-    # largest number of iterations for Picard
-    it_max = 1000;
-    # relative objective variation desired
-    tol = 1e-5;
-    # number of uniformly sampled points for correlation kernel approximation
-    p = 10000;
-
+function estimate_Gaussian(s,n,sigma,espilon,it_max,tol,p)
+    #################### typical parameters #######################
+    #### number of DPP samples used for the estimation (from 1 to 10)
+    # s = 1;
+    #### number of points for approximating Fredholm determinant (the larger the better)
+    # n = 500;
+    #### Gaussian kernel bandwidth
+    # sigma = 0.1;
+    #### regularization parameter
+    # lambda = 1e-3;
+    #### constant added on diagonal of matrices
+    # epsilon = 1e-10;
+    #### largest number of iterations for Picard
+    # it_max = 1000;
+    #### relative objective variation desired
+    # tol = 1e-5;
+    #### number of uniformly sampled points for correlation kernel approximation
+    # p = 10000;
 
     # sample uniformly in [0,1]^2 n points
     Fredholm_sample = rand(Uniform(0,1), n,2);
@@ -44,9 +43,13 @@ function estimate_Gaussian()
     print("regularized Picard ...\n")
 
 
+    # initial positive definite iterate
+    X = randn(size(K));
+    B = X*X'+ UniformScaling(1e-10);
+
     use_inverse = false
     @time begin    
-        B, R, obj, i_stop = regularized_Picard(K, indices_DPP_samples, indices_Fredholm_sample, lambda, it_max ,tol,use_inverse)
+        B, R, obj, i_stop = regularized_Picard(B, K, indices_DPP_samples, indices_Fredholm_sample, lambda, it_max ,tol,use_inverse)
     end
 
     ## plot objectives
@@ -114,5 +117,5 @@ function estimate_Gaussian()
 
     display(plot_intensity_A)
     display(plot_intensity_K)
-    
+
 end
