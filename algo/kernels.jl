@@ -64,9 +64,9 @@ end
 
 
 function line(center,direction,odd_number_pts)
-    x = zeros(Float64, odd_number_pts,1);
+    x = zeros(Float64, 2,odd_number_pts);
     for i in 1:odd_number_pts
-        x[:,i] = center + (2*i/(odd_number_pts - 1) - 1)*direction;
+        x[:,odd_number_pts] = center + (2*i/(odd_number_pts - 1) - 1)*direction;
     end
     id_center = Int64((odd_number_pts - 1)/2)
     return x, id_center;

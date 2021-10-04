@@ -36,6 +36,12 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
     k = SqExponentialKernel();
     K = kernelmatrix(k, x) + epsilon *I ; 
 
+    # show value on a line
+    center = [0 0];
+    direction = [1 0];
+    nb_points = 101; # odd number
+    line_at_center, id_center = line(center,direction,nb_points);
+
     #####################################################################################################
     ## estimate B: insample likelihood
     #####################################################################################################
@@ -131,14 +137,14 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
     display(plt_GramK_slice)
     
     # show value on a line
-    center = [0 0];
-    direction = [1 0];
+    center = [0;0];
+    direction = [1;0];
     nb_points = 101; # odd number
-    line, id_center = line(center,direction);
+    line_at_center, id_center = line(center,direction,nb_points);
 
     GramK_line = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,line,k,sigma);
     kernel_value = GramK_line[id_center,:];
-    plt_line = plot(line, kernel_value,title= "slice of correlation kernel",marker = :circle,markersize = 1)
+    plt_line = plot(line_at_center, kernel_value,title= "slice of correlation kernel",marker = :circle,markersize = 1)
     display(plt_line)
 
 
