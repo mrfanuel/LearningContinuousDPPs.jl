@@ -17,6 +17,9 @@ nb_unif = length(unif_sample)
 obj = zeros(it_max,1);
 i_stop = it_max;
 
+# regularization
+epsilon = 1e-10;
+
 
 # iterations
 for i in 1:it_max
@@ -53,7 +56,7 @@ for i in 1:it_max
     B = 0.5*(B+B');
 
     # track the objective values
-    obj_det,ob_reg = PicardObjectiveB(B, dpp_samples, unif_sample, R,lambda);
+    obj_det,ob_reg = Picard_objective(B, dpp_samples, unif_sample, R,lambda);
     obj[i] = obj_det + ob_reg;
 
     
@@ -64,7 +67,6 @@ for i in 1:it_max
         print("$(i) / $it_max\n")
         print("relative objective variation $(rel_variation)\n")
         print("objective = $(obj[i]) \n")
-        print("norm(B) = $(norm(B))\n")
 
     end
     # stopping criterion
@@ -86,7 +88,7 @@ return B, R, obj, i_stop
 
 end
 
-function PicardObjectiveB(B, dpp_samples, Fredholm_sample, R,lambda)
+function Picard_objective(B, dpp_samples, Fredholm_sample, R,lambda)
 
     # number of dpp samples
     nb_dpp_samples = length(dpp_samples); 

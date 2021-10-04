@@ -2,7 +2,7 @@ using LinearAlgebra
 using KernelFunctions
 using Distributions
 
-function correlationKernelGram(B,R,unifSamples,totalSamples,testSamples,k,sigma)
+function correlation_kernel_Gram(B,R,unifSamples,totalSamples,testSamples,k,sigma)
 
     F = cholesky(B).U;
 
@@ -30,7 +30,7 @@ function correlationKernelGram(B,R,unifSamples,totalSamples,testSamples,k,sigma)
 end
 
 
-function likelihoodKernelGram(B,R,totalSamples,testSamples,k,sigma)
+function likelihood_kernel_Gram(B,R,totalSamples,testSamples,k,sigma)
 
     F = cholesky(B).U;    
     
@@ -47,7 +47,7 @@ function likelihoodKernelGram(B,R,totalSamples,testSamples,k,sigma)
     return GramA;
 end
 
-function evaluateGramGrid(X,K_hat_mat,totalSamples,k,sigma)
+function evaluate_Gram_grid(X,K_hat_mat,totalSamples,k,sigma)
 
     nb_pts_grid = size(X,1);
     GramMatrix = zeros(Float64, nb_pts_grid,nb_pts_grid);
@@ -55,7 +55,7 @@ function evaluateGramGrid(X,K_hat_mat,totalSamples,k,sigma)
         for j in 1:nb_pts_grid
             v_i = X[i,:][1]';
             v_j = X[j,:][1]';
-            GramMatrix[i,j] = integralKernelFunction(v_i,v_j,K_hat_mat,totalSamples,k,sigma);
+            GramMatrix[i,j] = integral_kernel_function(v_i,v_j,K_hat_mat,totalSamples,k,sigma);
         end
     end
 
@@ -63,7 +63,18 @@ function evaluateGramGrid(X,K_hat_mat,totalSamples,k,sigma)
 end
 
 
-function integralKernelFunction(v,w,K_hat_mat,totalSamples,k,sigma)
+function line(center,direction,odd_number_pts)
+    x = zeros(Float64, odd_number_pts,1);
+    for i in 1:odd_number_pts
+        x[:,i] = center + (2*i/(odd_number_pts - 1) - 1)*direction;
+    end
+    id_center = Int64((odd_number_pts - 1)/2)
+    return x, id_center;
+end
+
+
+
+function integral_kernel_function(v,w,K_hat_mat,totalSamples,k,sigma)
     
     x_n = (totalSamples)'/(sigma);
 
