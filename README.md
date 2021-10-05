@@ -33,5 +33,7 @@
 
     include("demos/convergence_exact_solution.jl");
     convergence_exact_solution();
+
 ## Dependencies
+
 KernelFunctions, Plots, CSV, DelimitedFiles, DataFrames, LinearAlgebra, KernelFunctions, Distributions
