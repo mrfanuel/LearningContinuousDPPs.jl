@@ -146,4 +146,12 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
 
     plt = plot3d(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "estimated normalized pair correlation function");display(plt)
 
+    #####################################################################################################
+    ## save results
+    #####################################################################################################
+
+    filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000000*lambda))*"divideBy1Million_tol="*string(Int64(1e6*tol))*".jld";
+
+    save(filename, "B",B, "R",R, "n",n, "total_samples",total_samples, "GramK",GramK, "GramA",GramA, "GramK0",GramK_0, "obj",obj, "i_stop",i_stop);
+
 end
