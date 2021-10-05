@@ -3,7 +3,7 @@
 [arxiv:2106.14210](https://arxiv.org/pdf/2106.14210.pdf) to appear at NeurIPS 2021.
 
 
-### Example:
+##### Some examples to reproduce the paper's results.
 ####  Figure 1 top row
 
     include("demos/estimation_Gaussian.jl");
