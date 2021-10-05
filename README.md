@@ -1,5 +1,5 @@
 # Nonparametric estimation of continuous DPP
-## code of the paper Fanuel, M. and Bardenet, R., Nonparametric estimation of continuous DPPs with kernel methods [arxiv:2106.14210](https://arxiv.org/pdf/2106.14210.pdf)
+#### code of: Fanuel, M. and Bardenet, R., <em>Nonparametric estimation of continuous DPPs with kernel methods</em> [arxiv:2106.14210](https://arxiv.org/pdf/2106.14210.pdf)
 
 ### Dependencies
  KernelFunctions, Plots, CSV, DelimitedFiles, DataFrames, LinearAlgebra, KernelFunctions, Distributions
