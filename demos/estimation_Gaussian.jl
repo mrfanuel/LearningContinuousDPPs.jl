@@ -72,7 +72,7 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     Fredholm_samples = total_samples[indices_Fredholm_sample,:];
     color_Fredholm_samples = diagL[indices_Fredholm_sample];
 
-    #identify DPP samples
+    # identify DPP samples
     indices_DPP_samples = setdiff(collect(1:size(total_samples,1)),indices_Fredholm_sample)
     DPP_samples = total_samples[indices_DPP_samples,:];
     color_DPP_samples = diagL[indices_DPP_samples]
@@ -88,6 +88,8 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
 
     # test samples on a grid n_side x n_side in [0,1]^2
     n_side = 100;
+    x_tics = 0:(1/(n_side-1)):1;
+    y_tics = x_tics;
     n_test = n_side*n_side; a = 0.; b = 1.;
     test_samples = flat_square_2d_grid(n_test, a, b);
 
@@ -95,15 +97,12 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     GramA = likelihood_kernel_Gram(B,R,total_samples,test_samples,k,sigma);
 
     # plotting diagonal of Gram matrix
-    IntensityGramA = reshape(diag(GramA),(n_side,n_side));
-    x_tics = 0:(1/(n_side-1)):1;
-    y_tics = x_tics;
-    plt_intensity_A = heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood intensity");display(plt_intensity_A)
+    #IntensityGramA = reshape(diag(GramA),(n_side,n_side));
+    #plt_intensity_A = heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood intensity");display(plt_intensity_A)
 
     # plotting slice of Gram matrix
     id_slice = Int64(floor(n_side^2/2))+20;
     GramA_slice = GramA[:,id_slice];
-
     # reshaping
     GramA_slice_reshaped = reshape(GramA_slice,(n_side,n_side));
     plt = plot3d(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood kernel for one fixed argument");display(plt)
@@ -118,7 +117,6 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     
     # use these samples to compute correlation kernel
     GramK = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,test_samples,k,sigma);
-    plt_GamK = heatmap(GramK,title= "Gram matrix of K");display("plt_GamK")
 
     # plotting intensity
     IntensityGramK = reshape(diag(GramK),(n_side,n_side));
@@ -126,19 +124,26 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
 
     # plotting slice of Gram matrix
     GramK_slice = GramK[:,id_slice];
-
-    plt_GramK_slice = plot(1:(n_side*n_side),GramK_slice,title= "slice of correlation Gram matrix",marker = :circle,markersize = 1,legend = false);
-    display(plt_GramK_slice)
-
     # reshaping
     GramK_slice_reshaped = reshape(GramK_slice,(n_side,n_side));
     plt = plot3d(x_tics,y_tics,GramK_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument");display(plt)
 
+    # exact correlation kernel
+    alpha_0 = 0.05;
+    rho_0 = 100;
+    x_test_0 = (test_samples)'/(alpha_0/sqrt(2)); 
+    # NB: srt(2) to match the kernel definition in genGaussianSpatstats.R
+    k_0 = SqExponentialKernel();
+
+    GramK_0 = rho_0 * kernelmatrix(k_0, x_test_0) + epsilon *I ; # positive definite
+    GramK_0_slice = GramK_0[:,id_slice];
+    # reshaping
+    GramK_0_slice_reshaped = reshape(GramK_0_slice,(n_side,n_side));
+    plt = plot3d(x_tics,y_tics,GramK_0_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "exact correlation kernel for one fixed argument");display(plt)
+
     # plotting one g_2 (normalized pair correlation function)
     g_2 = (GramK_slice_reshaped./IntensityGramK)/IntensityGramK[id_slice];
 
-    plt = plot3d(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function");display(plt)
-
-    plt = heatmap(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function");display(plt)
+    plt = plot3d(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "estimated normalized pair correlation function");display(plt)
 
 end
