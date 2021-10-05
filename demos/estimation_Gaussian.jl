@@ -87,7 +87,7 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     #####################################################################################################
 
     # test samples on a grid n_side x n_side in [0,1]^2
-    n_side = 100;
+    n_side = 30;
     x_tics = 0:(1/(n_side-1)):1;
     y_tics = x_tics;
     n_test = n_side*n_side; 
@@ -103,7 +103,7 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     GramA_slice = GramA[:,id_slice];
     # reshaping
     GramA_slice_reshaped = reshape(GramA_slice,(n_side,n_side));
-    plt = plot3d(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood kernel for one fixed argument");display(plt)
+    plt = heatmap(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "learned likelihood kernel for one fixed argument");display(plt)
 
     #####################################################################################################
     ## estimate out-of-sample likelihood kernel on the same grid
@@ -117,17 +117,22 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     GramK = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,test_samples,k,sigma);
 
     # for plotting heatmap of Gram matrix do:
-    # display(heatmap(GramK));# beware: it is expensive
+    display(heatmap(GramK,title="Gram matrix of estimated correlation kernel"));
+    # beware: it is expensive for large grids
     
     # plotting intensity
     IntensityGramK = reshape(diag(GramK),(n_side,n_side));
     plt_intensity_K = heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity of learned DPP ");display(plt_intensity_K)
 
-    # plotting slice of Gram matrix
+    ## plotting slice of Gram matrix
+    i = floor(n_side/2); 
+    j = floor(n_side/2);
+    # center of the grid
+    id_slice = Int64(j + n_side*(i-1));
     GramK_slice = GramK[:,id_slice];
     # reshaping
     GramK_slice_reshaped = reshape(GramK_slice,(n_side,n_side));
-    plt = plot3d(x_tics,y_tics,GramK_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument");display(plt)
+    plt = heatmap(x_tics,y_tics,GramK_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument");display(plt)
 
     # exact correlation kernel
     alpha_0 = 0.05;
@@ -137,15 +142,21 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     k_0 = SqExponentialKernel();
 
     GramK_0 = rho_0 * kernelmatrix(k_0, x_test_0) + epsilon *I ; # positive definite
+
+    # for plotting heatmap of Gram matrix do:
+    display(heatmap(GramK_0,title="Gram matrix of exact correlation kernel"));
+    # beware: it is expensive for large grids
+
+    # take a slice
     GramK_0_slice = GramK_0[:,id_slice];
     # reshaping
     GramK_0_slice_reshaped = reshape(GramK_0_slice,(n_side,n_side));
-    plt = plot3d(x_tics,y_tics,GramK_0_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "exact correlation kernel for one fixed argument");display(plt)
+    plt = heatmap(x_tics,y_tics,GramK_0_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "exact correlation kernel for one fixed argument");display(plt)
 
     # plotting one g_2 (normalized pair correlation function)
     g_2 = (GramK_slice_reshaped./IntensityGramK)/IntensityGramK[id_slice];
 
-    plt = plot3d(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "estimated normalized pair correlation function");display(plt)
+    plt = heatmap(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "estimated normalized pair correlation function");display(plt)
 
     #####################################################################################################
     ## save results

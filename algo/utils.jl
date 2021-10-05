@@ -7,11 +7,12 @@ using DataFrames
     flat_square_2d_grid(n, a, b)
 
 # Arguments
-- `n:Integer`: total number of points (perfect square, otherwise floor(sqrt(n))^2)
+- `n:Integer`: total number of points sqrtn^2 with sqrtn = floor(sqrt(n))^2)
 - `a:Float`: start point of interval [a,b].
 - `b:Float`: end point of interval [a,b].
 
 Gives an nx2 array with coordinates of n grid nodes with [a,b]
+position (i,j) -> row = j + sqrtn (i-1) for i,j = 1, ..., sqrtn
 """
 function flat_square_2d_grid(n, a, b)
 
