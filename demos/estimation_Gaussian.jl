@@ -55,12 +55,11 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     ## plot objectives
     #####################################################################################################
     print("Plotting ...\n")
-    # skip first iterates
-    i_start = 5;
+    i_start = 5; # skip first iterates
     range = i_start:i_stop;
 
     # plotting
-    plt_objectives = plot(range,obj[range],title="objective decay",xlabel="number of iterations",ylabel="objective value",legend=false)
+    plt_objectives = plot(range,obj[range],title="objective values",xlabel="number of iterations",ylabel="objective value",legend=false)
     display(plt_objectives)
 
     #####################################################################################################
@@ -99,23 +98,15 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     IntensityGramA = reshape(diag(GramA),(n_side,n_side));
     x_tics = 0:(1/(n_side-1)):1;
     y_tics = x_tics;
-    plt_intensity_A = heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood intensity")
+    plt_intensity_A = heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood intensity");display(plt_intensity_A)
 
     # plotting slice of Gram matrix
     id_slice = Int64(floor(n_side^2/2))+20;
     GramA_slice = GramA[:,id_slice];
-    plt_GramA_slice = plot(1:(n_side*n_side),GramA_slice,title= "slice of likelihood Gram matrix",marker = :circle,markersize = 1,legend = false);
-    display(plt_intensity_A)
-    display(plt_GramA_slice)
 
+    # reshaping
     GramA_slice_reshaped = reshape(GramA_slice,(n_side,n_side));
-
-    plt = heatmap(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood kernel for one fixed argument")
-    display(plt)
-    plt = plot3d(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood kernel for one fixed argument")
-    display(plt)
-
-
+    plt = plot3d(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood kernel for one fixed argument");display(plt)
 
     #####################################################################################################
     ## estimate out-of-sample likelihood kernel on the same grid
@@ -127,12 +118,11 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     
     # use these samples to compute correlation kernel
     GramK = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,test_samples,k,sigma);
+    plt_GamK = heatmap(GramK,title= "Gram matrix of K");display("plt_GamK")
 
     # plotting intensity
     IntensityGramK = reshape(diag(GramK),(n_side,n_side));
-    plt_intensity_K = heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity of learned DPP ")
-
-    display(plt_intensity_K)
+    plt_intensity_K = heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity of learned DPP ");display(plt_intensity_K)
 
     # plotting slice of Gram matrix
     GramK_slice = GramK[:,id_slice];
@@ -140,37 +130,15 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     plt_GramK_slice = plot(1:(n_side*n_side),GramK_slice,title= "slice of correlation Gram matrix",marker = :circle,markersize = 1,legend = false);
     display(plt_GramK_slice)
 
-
+    # reshaping
     GramK_slice_reshaped = reshape(GramK_slice,(n_side,n_side));
-
-    plt = heatmap(x_tics,y_tics,GramK_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument")
-    display(plt)
-
-    plt = plot3d(x_tics,y_tics,GramK_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument")
-    display(plt)
+    plt = plot3d(x_tics,y_tics,GramK_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument");display(plt)
 
     # plotting one g_2 (normalized pair correlation function)
-
     g_2 = (GramK_slice_reshaped./IntensityGramK)/IntensityGramK[id_slice];
 
-    plt = plot3d(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function")
-    display(plt)
+    plt = plot3d(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function");display(plt)
 
-    plt = heatmap(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function")
-    display(plt)
-
-    # show value of correlation kernel on a line
-    center = [0.5 0.5];
-    dir = [1 1];
-    dir = 0.5*dir/norm(dir);
-    odd_number_pts = 401;
-
-    line_at_center, pos_along_dir, id_center = line(center,dir,odd_number_pts);
-
-    GramK_line = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,line_at_center,k,sigma);
-    kernel_value = vec(GramK_line[id_center,:]);
-
-    plt_value_line = plot(pos_along_dir,kernel_value,title= "correlation kernel along segment",marker = :circle,markersize = 1,legend = false)
-    display(plt_value_line)
+    plt = heatmap(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function");display(plt)
 
 end
