@@ -1,26 +1,27 @@
 using KernelFunctions
 using Plots
 
+
 include("../algo/kernels.jl")
 include("../algo/regularized_Picard.jl")
 include("../algo/utils.jl")
 
-function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lambda::Float64,it_max::Int64,tol::Float64,p::Int64)
-    #################### typical parameters ######################
-    #### number of DPP samples used for the estimation (from 1 to 10)
-    # s = 1;
-    #### number of points for approximating Fredholm determinant (the larger the better)
-    # n = 1000;
-    #### Gaussian kernel bandwidth
-    # sigma = 0.1;
-    #### regularization parameter
-    # lambda = 1e-1;
-    #### largest number of iterations for Picard
-    # it_max = 100000;
-    #### relative objective variation desired
-    # tol = 1e-5;
-    #### number of uniformly sampled points for correlation kernel approximation (the larger the better)
-    # p = 10000
+"""
+    estimate_Gaussian(s,n,sigma,lambda,tol,intensity,it_max,p)
+
+# Arguments
+- `s::Integer`: the number of Gaussian-DPP samples used for estimation (up to 10).
+- `n:Integer`: the number of uniformly sampled point for approximating the Fredholm determinant
+- `sigma:Float`: RKHS kernel bandwidth
+- `lambda:Float`: regularization parameter
+- `tol:Float`: relative objective variation desired for regularized Picard iteration
+- `intensity:Integer=100`: choose Gaussian-DPP data-samples with intensity 100 (or 50)
+- `it_max:Integer=100000`: largest number of iterations for Picard
+- `p:Integer= 10000`: the number of uniformly sampled point for approximating correlation kernel
+
+Estimate likelihood and correlation kernels and plots several figures
+"""
+function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol::Float64,intensity::Int64=100,it_max::Int64=100000,p::Int64 = 10000)
 
     # constant added on diagonal of matrices
     epsilon = 1e-10;
@@ -36,20 +37,12 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
     k = SqExponentialKernel();
     K = kernelmatrix(k, x) + epsilon *I ; 
 
-    # show value on a line
-    center = [0 0];
-    direction = [1 0];
-    nb_points = 101; # odd number
-    line_at_center, id_center = line(center,direction,nb_points);
-
     #####################################################################################################
     ## estimate B: insample likelihood
     #####################################################################################################
 
     print("Solving discrete problem with regularized Picard ...\n")
-
-
-    # initial positive definite iterate
+    # initial positive definite B
     X = randn(size(K));
     B = X*X'+ UniformScaling(epsilon);
 
@@ -58,18 +51,21 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
         B, R, obj, i_stop = regularized_Picard(B, K, indices_DPP_samples, indices_Fredholm_sample, lambda, it_max ,tol,use_inverse)
     end
 
+    #####################################################################################################
     ## plot objectives
-
+    #####################################################################################################
+    print("Plotting ...\n")
     # skip first iterates
     i_start = 5;
     range = i_start:i_stop;
 
     # plotting
-    plt_objectives = plot(range,obj[range],title="objective decay",xlabel="number of iterations",ylabel="objective value")
+    plt_objectives = plot(range,obj[range],title="objective decay",xlabel="number of iterations",ylabel="objective value",legend=false)
     display(plt_objectives)
 
+    #####################################################################################################
     ## scatter plot of in-sample likelihood kernel
-
+    #####################################################################################################
     # color is diagonal of likelihood matrix
     diagL = diag(R'*B*R);
 
@@ -85,7 +81,6 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
     # plot in-sample likelihood
     plt_in_sample_likelihood = scatter(Fredholm_samples[:,1],Fredholm_samples[:,2],zcolor=color_Fredholm_samples,marker = :cross,markersize = 3, title="in-sample likelihood",label="unif",legend=true)
     scatter!(DPP_samples[:,1],DPP_samples[:,2],zcolor=color_DPP_samples,marker = :circle,markersize = 3,legend = false,colorbar = true,framestyle=:box,xtickfont = font(10),ytickfont = font(10),label="DPP")
-    
     display(plt_in_sample_likelihood)
 
     #####################################################################################################
@@ -95,7 +90,7 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
     # test samples on a grid n_side x n_side in [0,1]^2
     n_side = 100;
     n_test = n_side*n_side; a = 0.; b = 1.;
-    test_samples = flat_square_grid(n_test, a, b);
+    test_samples = flat_square_2d_grid(n_test, a, b);
 
     # evaluate likelihood kernel on the grid
     GramA = likelihood_kernel_Gram(B,R,total_samples,test_samples,k,sigma);
@@ -104,13 +99,21 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
     IntensityGramA = reshape(diag(GramA),(n_side,n_side));
     x_tics = 0:(1/(n_side-1)):1;
     y_tics = x_tics;
-    plt_intensity_A = heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity A")
+    plt_intensity_A = heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood intensity")
 
-    GramA_slice = GramA[:,5000];
-    plt_GramA_slice = plot(1:(n_side*n_side),GramA_slice,title= "slice of GramA",marker = :circle,markersize = 1);
-
+    # plotting slice of Gram matrix
+    id_slice = Int64(floor(n_side^2/2))+20;
+    GramA_slice = GramA[:,id_slice];
+    plt_GramA_slice = plot(1:(n_side*n_side),GramA_slice,title= "slice of likelihood Gram matrix",marker = :circle,markersize = 1,legend = false);
     display(plt_intensity_A)
     display(plt_GramA_slice)
+
+    GramA_slice_reshaped = reshape(GramA_slice,(n_side,n_side));
+
+    plt = heatmap(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood kernel for one fixed argument")
+    display(plt)
+    plt = plot3d(x_tics,y_tics,GramA_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood kernel for one fixed argument")
+    display(plt)
 
 
 
@@ -125,27 +128,49 @@ function estimate_Gaussian(intensity::Int64,s::Int64,n::Int64,sigma::Float64,lam
     # use these samples to compute correlation kernel
     GramK = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,test_samples,k,sigma);
 
-    # plotting
+    # plotting intensity
     IntensityGramK = reshape(diag(GramK),(n_side,n_side));
-    plt_intensity_K = heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity K")
+    plt_intensity_K = heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity of learned DPP ")
 
     display(plt_intensity_K)
 
-    GramK_slice = GramK[:,5000];
-    plt_GramK_slice = scatter(1:(n_side*n_side),GramK_slice,title= "slice of GramA",marker = :circle,markersize = 1);
+    # plotting slice of Gram matrix
+    GramK_slice = GramK[:,id_slice];
 
+    plt_GramK_slice = plot(1:(n_side*n_side),GramK_slice,title= "slice of correlation Gram matrix",marker = :circle,markersize = 1,legend = false);
     display(plt_GramK_slice)
-    
-    # show value on a line
-    center = [0;0];
-    direction = [1;0];
-    nb_points = 101; # odd number
-    line_at_center, id_center = line(center,direction,nb_points);
 
-    GramK_line = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,line,k,sigma);
-    kernel_value = GramK_line[id_center,:];
-    plt_line = plot(line_at_center, kernel_value,title= "slice of correlation kernel",marker = :circle,markersize = 1)
-    display(plt_line)
 
+    GramK_slice_reshaped = reshape(GramK_slice,(n_side,n_side));
+
+    plt = heatmap(x_tics,y_tics,GramK_slice_reshaped,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument")
+    display(plt)
+
+    plt = plot3d(x_tics,y_tics,GramK_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument")
+    display(plt)
+
+    # plotting one g_2 (normalized pair correlation function)
+
+    g_2 = (GramK_slice_reshaped./IntensityGramK)/IntensityGramK[id_slice];
+
+    plt = plot3d(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function")
+    display(plt)
+
+    plt = heatmap(x_tics,y_tics,g_2,xtickfont = font(10),ytickfont = font(10),title= "normalized pair correlation function")
+    display(plt)
+
+    # show value of correlation kernel on a line
+    center = [0.5 0.5];
+    dir = [1 1];
+    dir = 0.5*dir/norm(dir);
+    odd_number_pts = 401;
+
+    line_at_center, pos_along_dir, id_center = line(center,dir,odd_number_pts);
+
+    GramK_line = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,line_at_center,k,sigma);
+    kernel_value = vec(GramK_line[id_center,:]);
+
+    plt_value_line = plot(pos_along_dir,kernel_value,title= "correlation kernel along segment",marker = :circle,markersize = 1,legend = false)
+    display(plt_value_line)
 
 end

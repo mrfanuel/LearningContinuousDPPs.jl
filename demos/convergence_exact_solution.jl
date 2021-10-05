@@ -9,6 +9,11 @@ include("../algo/kernels.jl")
 include("../algo/regularized_Picard.jl")
 include("../algo/utils.jl")
 
+"""
+    convergence_exact_solution()
+
+Visualize the convergence of regularized Picard to exact solution (see Proposition 10)
+"""
 function convergence_exact_solution()
 
     # width
