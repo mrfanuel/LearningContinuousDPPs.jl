@@ -40,34 +40,34 @@ end
 
 Loads DPP samples and 
 """
-function add_DPP_samples_to_Fredholm_samples(s,Fredholm_sample,intensity)
+function add_DPP_samples_to_Fredholm_samples(s,Fredholm_sple,intensity)
 
     # intensity of generating process
     strg_intensity = string(intensity)
 
     # create an array containing s arrays of DPP samples
-    indices_DPP_samples = Array{Int64,1}[];
-    n = size(Fredholm_sample,1)
-    indices_Fredholm_sample = collect(1:n); # the set I
-    all_samples = Fredholm_sample;
+    indices_DPP_sples = Array{Int64,1}[];
+    n = size(Fredholm_sple,1)
+    indices_Fredholm_sple = collect(1:n); # the set I
+    all_sples = Fredholm_sple;
 
     print("Loading DPP samples from: \n")
-    id_last_sample = n;
+    id_last_sple = n;
     for i = 0:(s-1)
         # read files and specify that they start from first row
         file_name = "data/statspats/samples/GaussDPPsample_alpha0_00p5_rho0_"*strg_intensity*"_nb_"*string(i+1)*".csv"
         print(file_name, " \n")
-        sample = CSV.File(file_name; header=true) |> Tables.matrix 
-        sample = sample[:,2:3]; # remove first column
-        id_sample = collect((id_last_sample+1):(id_last_sample + size(sample,1)));
-        id_last_sample = id_last_sample + size(sample,1);
+        sple = CSV.File(file_name; header=true) |> Tables.matrix 
+        sple = sple[:,2:3]; # remove first column
+        id_sple = collect((id_last_sple+1):(id_last_sple + size(sple,1)));
+        id_last_sple = id_last_sple + size(sple,1);
         # add i-th dpp sample indices
-        push!(indices_DPP_samples,id_sample);
+        push!(indices_DPP_sples,id_sple);
         # array with all samples
-        all_samples = [all_samples; sample];
+        all_sples = [all_sples; sple];
     end
     print("Done \n")
 
 
-    return all_samples, indices_Fredholm_sample, indices_DPP_samples
+    return all_sples, indices_Fredholm_sple, indices_DPP_sples
 end

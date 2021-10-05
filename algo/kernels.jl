@@ -19,25 +19,23 @@ Compute Gram matrix of correlation kernel on test data.
 """
 function correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma)
 
-    F = cholesky(B).U;
+    F = cholesky(B).U; # B = F'F
 
-    # construct kernel matrices
+    # construct cross kernel matrices
     x_m = (all_samples)'/(sigma);
     x_p = (unif_samples)'/(sigma);
     K_mp = kernelmatrix(k, x_m, x_p);
 
-    p = size(K_mp,2);
-
     x_t = (test_samples)'/(sigma);
     K_mt = kernelmatrix(k, x_m, x_t);
 
-    temp_1 = F*((R')\K_mp);
+    T_1 = F*((R')\K_mp);
+    p = size(K_mp,2);
+    M = (1/p)*T_1*T_1' + I;
 
-    M = temp_1*(1/p)*temp_1' +I;
+    T_2 = F*((R')\K_mt);
 
-    temp_2 = F*((R')\K_mt);
-
-    GramK = temp_2'*(M\temp_2); 
+    GramK = T_2'*(M\T_2); 
 
     GramK = 0.5*(GramK+GramK');
 
@@ -58,34 +56,18 @@ end
 
 Compute Gram matrix of likelihood kernel on test data.
 """
-function likelihood_kernel_Gram(B,R,all_samples,test_samples,k,sigma)
+function likelihood_kernel_Gram(B,R,all_sples,test_sples,k,sigma)
 
-    F = cholesky(B).U;    
+    F = cholesky(B).U; # B = F'F  
     
-    x_m = (all_samples)'/(sigma);
-
-    x_t = (test_samples)'/(sigma);
-
+    # construct cross kernel matrices
+    x_m = (all_sples)'/(sigma);
+    x_t = (test_sples)'/(sigma);
     K_mt = kernelmatrix(k, x_m, x_t);
 
-    temp = F*((R')\K_mt);
-
-    GramA = temp'*temp;
+    T = F*((R')\K_mt);
+    GramA = T'*T;
 
     return GramA;
-end
-
-
-function line(center,direction,odd_number_pts)
-    x = zeros(Float64,odd_number_pts,2);
-    l = zeros(Float64,odd_number_pts,1);
-    L = norm(direction);
-    for i in 1:odd_number_pts
-        l[i] = (2*i/(odd_number_pts - 1) - 1)*L; # position along direction
-        x[i,1] = center[1] + (2*i/(odd_number_pts - 1) - 1)*direction[1];
-        x[i,2] = center[2] + (2*i/(odd_number_pts - 1) - 1)*direction[2];
-    end
-    id_center = Int64((odd_number_pts - 1)/2)
-    return x, l, id_center;
 end
 

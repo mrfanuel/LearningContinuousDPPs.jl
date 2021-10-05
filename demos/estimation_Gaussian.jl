@@ -27,13 +27,13 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     epsilon = 1e-10;
 
     # sample uniformly in [0,1]^2 n points
-    Fredholm_sample = rand(Uniform(0,1), n,2);
+    Fredholm_sple = rand(Uniform(0,1), n,2);
 
     # load DPP samples
-    total_samples, indices_Fredholm_sample, indices_DPP_samples = add_DPP_samples_to_Fredholm_samples(s,Fredholm_sample,intensity)
+    total_sples, indices_Fredholm_sple, indices_DPP_sples = add_DPP_samples_to_Fredholm_samples(s,Fredholm_sple,intensity)
 
     # create full kernel matrix
-    x = (total_samples)'/sigma;
+    x = (total_sples)'/sigma;
     k = SqExponentialKernel();
     K = kernelmatrix(k, x) + epsilon *I ; 
 
@@ -48,7 +48,7 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
 
     use_inverse = false
     @time begin    
-        B, R, obj, i_stop = regularized_Picard(B, K, indices_DPP_samples, indices_Fredholm_sample, lambda, it_max ,tol,use_inverse)
+        B, R, obj, i_stop = regularized_Picard(B, K, indices_DPP_sples, indices_Fredholm_sple, lambda, it_max ,tol,use_inverse)
     end
 
     #####################################################################################################
@@ -69,18 +69,18 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     diagL = diag(R'*B*R);
 
     # identify uniform samples
-    Fredholm_samples = total_samples[indices_Fredholm_sample,:];
-    color_Fredholm_samples = diagL[indices_Fredholm_sample];
+    Fredholm_sples = total_sples[indices_Fredholm_sple,:];
+    color_Fredholm_sples = diagL[indices_Fredholm_sple];
 
     # identify DPP samples
-    indices_DPP_samples = setdiff(collect(1:size(total_samples,1)),indices_Fredholm_sample)
-    DPP_samples = total_samples[indices_DPP_samples,:];
-    color_DPP_samples = diagL[indices_DPP_samples]
+    indices_DPP_sples = setdiff(collect(1:size(total_sples,1)),indices_Fredholm_sple)
+    DPP_sples = total_sples[indices_DPP_sples,:];
+    color_DPP_sples = diagL[indices_DPP_sples]
 
     # plot in-sample likelihood
-    plt_in_sample_likelihood = scatter(Fredholm_samples[:,1],Fredholm_samples[:,2],zcolor=color_Fredholm_samples,marker = :cross,markersize = 3, title="in-sample likelihood",label="unif",legend=true)
-    scatter!(DPP_samples[:,1],DPP_samples[:,2],zcolor=color_DPP_samples,marker = :circle,markersize = 3,legend = false,colorbar = true,framestyle=:box,xtickfont = font(10),ytickfont = font(10),label="DPP")
-    display(plt_in_sample_likelihood)
+    plt_in_sple_likelihood = scatter(Fredholm_sples[:,1],Fredholm_sples[:,2],zcolor=color_Fredholm_sples,marker = :cross,markersize = 3, title="in-sample likelihood",label="unif",legend=true)
+    scatter!(DPP_sples[:,1],DPP_sples[:,2],zcolor=color_DPP_sples,marker = :circle,markersize = 3,legend = false,colorbar = true,framestyle=:box,xtickfont = font(10),ytickfont = font(10),label="DPP")
+    display(plt_in_sple_likelihood)
 
     #####################################################################################################
     ## estimate out-of-sample likelihood kernel on grid
@@ -90,13 +90,13 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     n_side = 30;
     x_tics = 0:(1/(n_side-1)):1;
     y_tics = x_tics;
-    n_test = n_side*n_side; 
+    n_test = n_side^2; 
 
     a = 0.; b = 1.; # interval [a,b]
-    test_samples = flat_square_2d_grid(n_test, a, b);
+    test_sples = flat_square_2d_grid(n_test, a, b);
 
     # evaluate likelihood kernel on the grid
-    GramA = likelihood_kernel_Gram(B,R,total_samples,test_samples,k,sigma);
+    GramA = likelihood_kernel_Gram(B,R,total_sples,test_sples,k,sigma);
 
     # plotting slice of Gram matrix
     id_slice = Int64(floor(n_side^2/2))+20;
@@ -111,10 +111,10 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
 
     # sampling uniformly p points in window [0,1]^2
     c_1 = 0.; c_2 = 1.;
-    unif_samples_correlation = rand(Uniform(c_1,c_2), p,2);
+    unif_sples_correlation = rand(Uniform(c_1,c_2), p,2);
     
     # use these samples to compute correlation kernel
-    GramK = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,test_samples,k,sigma);
+    GramK = correlation_kernel_Gram(B,R,unif_sples_correlation,total_sples,test_sples,k,sigma);
 
     # for plotting heatmap of Gram matrix do:
     display(heatmap(GramK,title="Gram matrix of estimated correlation kernel"));
@@ -137,7 +137,7 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     # exact correlation kernel
     alpha_0 = 0.05;
     rho_0 = 100;
-    x_test_0 = (test_samples)'/(alpha_0/sqrt(2)); 
+    x_test_0 = (test_sples)'/(alpha_0/sqrt(2)); 
     # NB: srt(2) to match the kernel definition in genGaussianSpatstats.R
     k_0 = SqExponentialKernel();
 
@@ -164,7 +164,7 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
 
     filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_divideby1e3sigma="*string(Int64(1e3*sigma))*"_divideBy1e6lambda="*string(Int64(1e6*lambda))*"divideBy1e6_tol="*string(Int64(1e6*tol))*".jld";
 
-    save(filename, "B",B, "R",R, "n",n, "total_samples",total_samples, "GramK",GramK, "GramA",GramA, "GramK0",GramK_0, "obj",obj, "i_stop",i_stop);
+    save(filename, "B",B, "R",R, "n",n, "total_samples",total_sples, "GramK",GramK, "GramA",GramA, "GramK0",GramK_0, "obj",obj, "i_stop",i_stop);
 
     # for loading results do as follows:
     # dict = load("filename")
