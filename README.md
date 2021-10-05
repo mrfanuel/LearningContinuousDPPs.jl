@@ -1,10 +1,10 @@
 # Nonparametric estimation of continuous DPP
-#### code of: Fanuel, M. and Bardenet, R., <em>Nonparametric estimation of continuous DPPs with kernel methods</em> [arxiv:2106.14210](https://arxiv.org/pdf/2106.14210.pdf)
+#### Fanuel, M. and Bardenet, R., <em>Nonparametric estimation of continuous DPPs with kernel methods</em> #### preprint: [arxiv:2106.14210](https://arxiv.org/pdf/2106.14210.pdf)
+#### to appear at NeurIPS 2021.
 
-### Dependencies
- KernelFunctions, Plots, CSV, DelimitedFiles, DataFrames, LinearAlgebra, KernelFunctions, Distributions
-### example: to reproduce the results of the paper
-####  Figure 1  top row
+
+### Example:
+####  Figure 1 top row
 
     include("demos/estimation_Gaussian.jl");
     s = 1;
@@ -14,7 +14,7 @@
     tol = 1e-5;
     intensity = 50;
     estimate_Gaussian(s,n,sigma,lambda,tol,intensity);
-####  Figure 1  bottom row
+####  Figure 1 bottom row
 
     include("demos/estimation_Gaussian.jl");
     s = 1;
@@ -24,3 +24,6 @@
     tol = 1e-5;
     intensity = 100;
     estimate_Gaussian(s,n,sigma,lambda,tol,intensity);
+
+### Dependencies
+KernelFunctions, Plots, CSV, DelimitedFiles, DataFrames, LinearAlgebra, KernelFunctions, Distributions
