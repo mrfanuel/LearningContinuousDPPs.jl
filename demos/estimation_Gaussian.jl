@@ -1,6 +1,6 @@
 using KernelFunctions
 using Plots
-
+using JLD
 
 include("../algo/kernels.jl")
 include("../algo/regularized_Picard.jl")
@@ -90,15 +90,13 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     n_side = 100;
     x_tics = 0:(1/(n_side-1)):1;
     y_tics = x_tics;
-    n_test = n_side*n_side; a = 0.; b = 1.;
+    n_test = n_side*n_side; 
+
+    a = 0.; b = 1.; # interval [a,b]
     test_samples = flat_square_2d_grid(n_test, a, b);
 
     # evaluate likelihood kernel on the grid
     GramA = likelihood_kernel_Gram(B,R,total_samples,test_samples,k,sigma);
-
-    # plotting diagonal of Gram matrix
-    #IntensityGramA = reshape(diag(GramA),(n_side,n_side));
-    #plt_intensity_A = heatmap(x_tics,y_tics,IntensityGramA,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "likelihood intensity");display(plt_intensity_A)
 
     # plotting slice of Gram matrix
     id_slice = Int64(floor(n_side^2/2))+20;
@@ -118,6 +116,9 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     # use these samples to compute correlation kernel
     GramK = correlation_kernel_Gram(B,R,unif_samples_correlation,total_samples,test_samples,k,sigma);
 
+    # for plotting heatmap of Gram matrix do:
+    # display(heatmap(GramK));# beware: it is expensive
+    
     # plotting intensity
     IntensityGramK = reshape(diag(GramK),(n_side,n_side));
     plt_intensity_K = heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity of learned DPP ");display(plt_intensity_K)
@@ -150,8 +151,12 @@ function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol:
     ## save results
     #####################################################################################################
 
-    filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_sigma="*string(Int64(1000*sigma))*"_lambda="*string(Int64(1000000*lambda))*"divideBy1Million_tol="*string(Int64(1e6*tol))*".jld";
+    filename = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_divideby1e3sigma="*string(Int64(1e3*sigma))*"_divideBy1e6lambda="*string(Int64(1e6*lambda))*"divideBy1e6_tol="*string(Int64(1e6*tol))*".jld";
 
     save(filename, "B",B, "R",R, "n",n, "total_samples",total_samples, "GramK",GramK, "GramA",GramA, "GramK0",GramK_0, "obj",obj, "i_stop",i_stop);
+
+    # for loading results do as follows:
+    # dict = load("filename")
+    # e.g. GramK = dict["GramK"]
 
 end
