@@ -8,15 +8,12 @@
 ### Estimation 
 
 ####  Figure 1 top row
+~~~julia
+julia> include("demos/estimation_Gaussian.jl");
+julia> s = 1; n = 1000; sigma = 0.1; lambda = 0.1; tol = 1e-2; intensity = 50;
+julia> estimate_Gaussian(s,n,sigma,lambda,tol,intensity);
+~~~julia
 
-    include("demos/estimation_Gaussian.jl");
-    s = 1;
-    n = 1000;
-    sigma = 0.1;
-    lambda = 0.1;
-    tol = 1e-2;
-    intensity = 50;
-    estimate_Gaussian(s,n,sigma,lambda,tol,intensity);
 ####  Figure 1 bottom row
 
     include("demos/estimation_Gaussian.jl");
