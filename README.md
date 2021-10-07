@@ -14,13 +14,13 @@ julia> using Pkg; Pkg.install("PackageName");
 ## Estimation 
 The figures of the paper can be reproduced by running the following code.
 ###  Figure 1 
-#### top row
+Top row
 ~~~julia
 julia> include("demos/estimation_Gaussian.jl");
 julia> s = 1; n = 1000; sigma = 0.1; lambda = 0.1; tol = 1e-5; intensity = 50;
 julia> estimate_Gaussian(s,n,sigma,lambda,tol,intensity);
 ~~~
-#### bottom row
+Bottom row
 ~~~julia
 julia> include("demos/estimation_Gaussian.jl");
 julia> s = 1; n = 1000; sigma = 0.1; lambda = 0.1; tol = 1e-5; intensity = 100;
