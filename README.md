@@ -40,7 +40,7 @@ julia> include("demos/estimation_Gaussian.jl");
 julia> s = 1; n = 1000; sigma = 0.1; lambda = 0.01; tol = 1e-5; intensity = 100;
 julia> estimate_Gaussian(s,n,sigma,lambda,tol,intensity);
 ~~~
-The other figures are obtained by adapting the corresponding parameters, e.g., to compute the estimation with more than one DPP sample increase the value of s (up to s = 10).
-Notice that a good approximation is already obtained with tol = 1e-5 in a shorter time.
+The other figures are obtained by adapting the corresponding parameters, e.g., to compute the estimation with more than one DPP sample increase the value of `s` (up to `s = 10`).
+Notice that a good approximation is already obtained with `tol = 1e-2` in a shorter time.
 
 
