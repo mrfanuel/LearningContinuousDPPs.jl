@@ -9,7 +9,7 @@ Please install the following packages:
 KernelFunctions, Plots, CSV, DelimitedFiles, DataFrames, LinearAlgebra, KernelFunctions, Distributions, JLD
 
 ~~~julia
-julia> using Pkg; Pkg.install("PackageName");
+julia> using Pkg; Pkg.add("PackageName");
 ~~~
 
 ## Estimation 
