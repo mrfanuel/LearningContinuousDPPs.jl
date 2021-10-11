@@ -1,7 +1,4 @@
-using CSV
-using DelimitedFiles
-using DataFrames
-
+using CSV, DelimitedFiles, DataFrames
 
 """
     flat_square_2d_grid(n, a, b)
@@ -70,4 +67,105 @@ function add_DPP_samples_to_Fredholm_samples(s,Fredholm_sple,intensity)
 
 
     return all_sples, indices_Fredholm_sple, indices_DPP_sples
+end
+
+
+function plot_objectives(i_start,i_stop, obj)   
+
+    range = i_start:i_stop;
+    # plotting
+    plt_objectives = plot(range,obj[range],title="objective values",xlabel="number of iterations",ylabel="objective value",legend=false);
+    display(plt_objectives)
+
+    
+end
+
+function plot_insample_likelihood(B, R, indices_Fredholm_sple, total_sples)
+
+    diagL = diag(R'*B*R);
+
+    # identify uniform samples
+    Fredholm_sples = total_sples[indices_Fredholm_sple,:];
+    color_Fredholm_sples = diagL[indices_Fredholm_sple];
+
+    # identify DPP samples
+    indices_DPP_sples = setdiff(collect(1:size(total_sples,1)),indices_Fredholm_sple)
+    DPP_sples = total_sples[indices_DPP_sples,:];
+    color_DPP_sples = diagL[indices_DPP_sples]
+
+    # plot in-sample likelihood
+    plt_in_sple_likelihood = scatter(Fredholm_sples[:,1],Fredholm_sples[:,2],zcolor=color_Fredholm_sples,marker = :cross,markersize = 3, title="in-sample likelihood",label="unif",legend=true)
+    scatter!(DPP_sples[:,1],DPP_sples[:,2],zcolor=color_DPP_sples,marker = :circle,markersize = 3,legend = false,colorbar = true,framestyle=:box,xtickfont = font(10),ytickfont = font(10),label="DPP")
+    display(plt_in_sple_likelihood)
+end
+
+function heatmap_intensity_correlation_kernel(GramK,n_side)
+
+    x_tics = 0:(1/(n_side - 1)):1;
+    y_tics = x_tics;
+    
+    # plotting intensity
+    IntensityGramK = reshape(diag(GramK),(n_side,n_side));
+    plt_intensity_K = heatmap(x_tics,y_tics,IntensityGramK,colorbar = true,xtickfont = font(10),ytickfont = font(10),title= "Intensity of learned DPP ");display(plt_intensity_K)
+
+end
+
+function heatmap_slice_Gram_matrix_at_grid_center(GramK,n_side)
+
+        x_tics = 0:(1/(n_side -1)):1;
+        y_tics = x_tics;
+
+        ## plotting slice of Gram matrix
+        i = floor(n_side/2); 
+        j = floor(n_side/2);
+        # center of the grid
+        id_slice = Int64(j + n_side*(i-1));
+        GramK_slice = GramK[:,id_slice];
+    
+        # reshaping
+        GramK_slice_reshaped = reshape(GramK_slice,(n_side,n_side));
+        plt = heatmap(x_tics,y_tics,GramK_slice_reshaped,xtickfont = font(10),ytickfont = font(10),title= "correlation kernel for one fixed argument");display(plt)
+end
+
+
+function folder_name(s,n,p,sigma,lambda,tol)
+
+    foldername = "results/result_s="*string(Int64(s))*"_n="*string(Int64(n))*"_p="*string(Int64(p))*"_divideby1e3sigma="*string(Int64(1e3*sigma))*"_divideBy1e6lambda="*string(Int64(1e6*lambda))*"divideBy1e6_tol="*string(Int64(1e6*tol));
+
+    return foldername;
+end
+
+function save_results_to_jld(B, R, n, total_sples, GramK, GramA, GramK_0, obj, i_stop, foldername)    
+
+    filename = foldername*"/outputs.jld";
+
+    save(filename, "B",B, "R",R, "n",n, "total_samples",total_sples, "GramK",GramK, "GramA",GramA, "GramK0",GramK_0, "obj",obj, "i_stop",i_stop);
+
+end
+
+function load_results_from_jld(foldername)    
+
+    ## load results
+    filename = foldername*"/outputs.jld";
+    dict = load(filename);
+
+    B =  dict["B"];
+    R = dict["R"];
+    n = dict["n"];
+    total_sples = dict["total_samples"];
+    GramK = ["GramK"];
+    GramA = dict["GramA"];
+    GramK_0 = dict["GramK0"];
+    obj =  dict["obj"];
+    i_stop = dict["i_stop"];
+
+    return B, R, n, total_sples, GramK, GramA, GramK_0, obj, i_stop;
+end
+
+function create_repo(s,n,p,sigma,lambda,tol)
+    foldername = folder_name(s,n,p,sigma,lambda,tol);
+    if isdir(foldername)==false
+        mkdir(foldername);
+    end
+    return foldername;
 end

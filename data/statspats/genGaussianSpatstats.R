@@ -6,11 +6,11 @@ library(foreach)
 library(doSNOW)
 library(parallel)
 
-#source("MLE_DPP.R") #Load the DPP function, make sure it is in the working directory.
+#source("MLE_DPP.R")
+# courtesy of Arnaud Poinas
+# https://github.com/APoinas/MLEDPP
+# Load the DPP function, make sure it is in the working directory.
 
-###############################Exemples of using the function MLEDPP#################################
-#####On a rectangular window#####
-#Gauss
 rho0 = 50; # 100 originally
 alpha0 = 0.05
 bound = 1
