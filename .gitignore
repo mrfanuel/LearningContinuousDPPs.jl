@@ -1,9 +1,12 @@
+.gitignore
 .DS_Store
 
 figures/*
 !figures/.gitkeep
 
 results/*
+plots_slides/*
+
 !results/.gitkeep
 
 
