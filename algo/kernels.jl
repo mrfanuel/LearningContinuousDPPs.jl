@@ -19,10 +19,6 @@ Compute Gram matrix of correlation kernel on test data.
 # Output
 - `GramK::Array{Float64,2}`: Gram matrix of size |test_samples| x |test_samples|
 
-# Example
-import LinearAlgebra, KernelFunctions 
-GramK = correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma);
-
 """
 function correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma)
 
@@ -65,10 +61,6 @@ Compute Gram matrix of likelihood kernel on test data.
 
 # Output
 - `GramA::Array{Float64,2}`: Gram matrix of size |test_samples| x |test_samples|
-
-# Example
-import LinearAlgebra, KernelFunctions 
-GramK = correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma);
 
 """
 function likelihood_kernel_Gram(B,R,all_sples,test_sples,k,sigma)

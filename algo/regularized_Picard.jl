@@ -21,9 +21,6 @@ Run regularized Picard iteration starting from an initial positive definite matr
 - `obj`: array containing the objective values at each iteration.
 - `i_stop`: number of iterations runned before stopping.
 
-# Example
-import LinearAlgebra 
-B, R, obj, i_stop = regularized_Picard(B,K,dpp_samples_ids,Fredholm_sample_ids,lambda,it_max,tol,use_inverse);
 """
 function regularized_Picard(B::Array{Float64,2},K::Array{Float64,2}, dpp_samples_ids::Array{Array{Int64,1},1}, Fredholm_sample_ids::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64,use_inverse::Bool)
 
@@ -114,6 +111,8 @@ end
 """
     Picard_objective(B, dpp_samples_ids, Fredholm_samples_ids, R,lambda)
 
+Computes Picard objective function.
+
 # Arguments
 - `B::Array{Float64,2}`: positive definite matrix B.
 - `dpp_samples_ids:Array{Array{Int64,1},1}`: array of arrays containing indices of s DPP samples.
@@ -121,7 +120,11 @@ end
 - `R`: Cholesky decomposition such that K = R'R.
 - `lambda:Float`: regularization parameter.
 
-Computes Picard objective function.
+# Outputs
+- `ob_det:Float`: part of the objective including the determinants.
+- `ob_reg:Float`: part of the objective including the regularization.
+
+For the full objective do ob_det + ob_reg
 """
 function Picard_objective(B, dpp_samples_ids, Fredholm_samples_ids, R,lambda)
 
