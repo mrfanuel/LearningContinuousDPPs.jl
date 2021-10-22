@@ -3,13 +3,17 @@ using CSV, DelimitedFiles, DataFrames
 """
     flat_square_2d_grid(n, a, b)
 
+construct a regular grid in interval [a,b]^2
+
 # Arguments
 - `n:Integer`: total number of points sqrtn^2 with sqrtn = floor(sqrt(n))^2)
 - `a:Float`: start point of interval [a,b].
 - `b:Float`: end point of interval [a,b].
 
-Gives an nx2 array with coordinates of n grid nodes with [a,b]
+# Output
+- `X::Array{Float64,2}`:  nx2 array with coordinates of n grid nodes with [a,b]
 position (i,j) -> row = j + sqrtn (i-1) for i,j = 1, ..., sqrtn
+
 """
 function flat_square_2d_grid(n, a, b)
 
@@ -30,12 +34,19 @@ end
 """
     add_DPP_samples_to_Fredholm_samples(s,Fredholm_sample,intensity)
 
+Loads DPP samples and concatenate them with Fredholm samples
+
 # Arguments
 - `s:Integer`: number of DPP samples.
 - `Fredholm_sample:Array`: array containing samples to approximate Fredholm determinant.
 - `intensity:Integer`: intensity of the DPP producing the samples (50 or 100).
 
-Loads DPP samples and 
+# Outputs
+
+- `all_sples`: array containing all the concatenated samples.
+- `indices_Fredholm_sple`: array containing the indices of the Fredholm samples.
+- `indices_DPP_sples`: array of arrays. The l-th entry of the array is an array containing the indices of the l-th DPP sample.
+
 """
 function add_DPP_samples_to_Fredholm_samples(s,Fredholm_sple,intensity)
 

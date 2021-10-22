@@ -121,8 +121,8 @@ Computes Picard objective function.
 - `lambda:Float`: regularization parameter.
 
 # Outputs
-- `ob_det:Float`: part of the objective including the determinants.
-- `ob_reg:Float`: part of the objective including the regularization.
+- `ob_det:Float`: term of the objective including the determinants.
+- `ob_reg:Float`: term of the objective including the regularization.
 
 For the full objective do ob_det + ob_reg
 """
