@@ -1,10 +1,11 @@
 using LinearAlgebra
 using KernelFunctions
-using Distributions
 
 
 """
     correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma)
+
+Compute Gram matrix of correlation kernel on test data.
 
 # Arguments
 - `B::Array{Float64,2}`: B matrix with same size as K.
@@ -15,7 +16,13 @@ using Distributions
 - `k:kernel`: RKHS kernel function; see KernelFunctions.
 - `sigma:Float`: RKHS kernel bandwidth.
 
-Compute Gram matrix of correlation kernel on test data.
+# Output
+- `GramK::Array{Float64,2}`: Gram matrix of size |test_samples| x |test_samples|
+
+# Example
+import LinearAlgebra, KernelFunctions 
+GramK = correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma);
+
 """
 function correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma)
 
@@ -46,6 +53,8 @@ end
 """
     likelihood_kernel_Gram(B,R,all_samples,test_samples,k,sigma)
 
+Compute Gram matrix of likelihood kernel on test data.
+
 # Arguments
 - `B::Array`: B matrix with same size as K.
 - `R:Array`: Cholesky s.t. K = R'R
@@ -54,7 +63,13 @@ end
 - `k:kernel`: RKHS kernel function; see KernelFunctions.
 - `sigma:Float`: RKHS kernel bandwidth.
 
-Compute Gram matrix of likelihood kernel on test data.
+# Output
+- `GramA::Array{Float64,2}`: Gram matrix of size |test_samples| x |test_samples|
+
+# Example
+import LinearAlgebra, KernelFunctions 
+GramK = correlation_kernel_Gram(B,R,unif_samples,all_samples,test_samples,k,sigma);
+
 """
 function likelihood_kernel_Gram(B,R,all_sples,test_sples,k,sigma)
 

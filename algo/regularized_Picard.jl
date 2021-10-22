@@ -3,6 +3,8 @@ using LinearAlgebra
 """
     regularized_Picard(B, K, dpp_samples_ids, Fredholm_sample_ids, lambda, it_max, tol, use_inverse)
 
+Run regularized Picard iteration starting from an initial positive definite matrix B.
+
 # Arguments
 - `B::Array{Float64,2}`: an initial positive definite matrix B.
 - `K::Array{Float64,2}`: full kernel matrix.
@@ -13,7 +15,15 @@ using LinearAlgebra
 - `tol:Float`: relative objective variation desired for regularized Picard iteration.
 - `use_inverse:Bool`: if true, inverse matrices are computed, otherwise only linear systems.
 
-Run regularized Picard iteration starting from an initial positive definite matrix B.
+# Output
+- `B::Array{Float64,2}`: approximate solution.
+- `R::Array{Float64,2}`: Cholesky s.t. K = R'R.
+- `obj`: array containing the objective values at each iteration.
+- `i_stop`: number of iterations runned before stopping.
+
+# Example
+import LinearAlgebra 
+B, R, obj, i_stop = regularized_Picard(B,K,dpp_samples_ids,Fredholm_sample_ids,lambda,it_max,tol,use_inverse);
 """
 function regularized_Picard(B::Array{Float64,2},K::Array{Float64,2}, dpp_samples_ids::Array{Array{Int64,1},1}, Fredholm_sample_ids::Array{Int64,1}, lambda::Float64, it_max::Int64 ,tol::Float64,use_inverse::Bool)
 
