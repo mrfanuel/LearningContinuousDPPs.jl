@@ -7,6 +7,8 @@ include("../algo/utils.jl")
 """
     estimate_Gaussian(s,n,sigma,lambda,tol,intensity,it_max,p)
 
+Estimate likelihood and correlation kernels and plots several figures. No output.
+
 # Arguments
 - `s::Integer`: the number of Gaussian-DPP samples used for estimation (up to 10).
 - `n:Integer`: the number of uniformly sampled point for approximating the Fredholm determinant
@@ -17,7 +19,6 @@ include("../algo/utils.jl")
 - `it_max:Integer=100000`: largest number of iterations for Picard
 - `p:Integer= 10000`: the number of uniformly sampled point for approximating correlation kernel
 
-Estimate likelihood and correlation kernels and plots several figures
 """
 function estimate_Gaussian(s::Int64,n::Int64,sigma::Float64,lambda::Float64,tol::Float64,intensity::Int64=100,it_max::Int64=100000,p::Int64 = 10000)
 
