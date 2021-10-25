@@ -3,7 +3,7 @@ using LinearAlgebra
 """
     regularized_Picard(B, K, dpp_samples_ids, Fredholm_sample_ids, lambda, it_max, tol, use_inverse)
 
-Run regularized Picard iteration starting from an initial positive definite matrix B.
+Runs regularized Picard iteration starting from an initial positive definite matrix B.
 
 # Arguments
 - `B::Array{Float64,2}`: an initial positive definite matrix B.

@@ -7,7 +7,7 @@ include("../algo/utils.jl")
 """
     estimate_Gaussian(s,n,sigma,lambda,tol,intensity,it_max,p)
 
-Estimate likelihood and correlation kernels and plots several figures. No output.
+Estimates likelihood and correlation kernels and plots several figures. No output.
 
 # Arguments
 - `s::Integer`: the number of Gaussian-DPP samples used for estimation (up to 10).
