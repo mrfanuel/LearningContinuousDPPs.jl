@@ -1,4 +1,4 @@
-using KernelFunctions,Plots,JLD
+using KernelFunctions,Plots,JLD,Distributions
 
 include("../algo/kernels.jl")
 include("../algo/regularized_Picard.jl")
