@@ -1,7 +1,7 @@
 # Nonparametric estimation of continuous DPPs with kernel methods
 
 This repository is the official implementation of
-Fanuel, M. and Bardenet, R., [Nonparametric estimation of continuous DPPs with kernel methods](https://arxiv.org/pdf/2106.14210.pdf) [NeurIPS 2021](https://proceedings.neurips.cc/paper/2021/hash/ca8a2d76a5bcc212226417361a5f0740-Abstract.html).
+Fanuel, M. and Bardenet, R., [Nonparametric estimation of continuous DPPs with kernel methods](https://arxiv.org/pdf/2106.14210.pdf) presented at [NeurIPS 2021](https://proceedings.neurips.cc/paper/2021/hash/ca8a2d76a5bcc212226417361a5f0740-Abstract.html).
 ## Install Julia
 Please visit [julialang.org](https://julialang.org/learning/getting-started/)
 
